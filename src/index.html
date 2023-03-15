@@ -11,11 +11,13 @@
         attribute vec4 vPosition;
         attribute vec4 vColor;
 
+        uniform mat4 uMatrix;
+
         varying vec4 fColor;
 
         void main()
         {
-            gl_Position = vPosition;
+            gl_Position = uMatrix * vPosition;
             fColor = vColor;
         }
     </script>
@@ -32,6 +34,7 @@
     <body>
         <div class="wrapper">
             <canvas id="canvas" width="720" height="720"></canvas>
+            <div id="properties"></div>
         </div>
     </body>
 </html>
