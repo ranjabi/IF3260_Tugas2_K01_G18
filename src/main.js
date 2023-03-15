@@ -31,12 +31,23 @@ function main() {
     let colors = hollow_cube.getFlattenColor();
 
     let rotation = [degreeToRadian(30), degreeToRadian(30), degreeToRadian(0)];
+    let translation = {
+        xOffset: 0,
+        yOffset: 0,
+        zOffset: 0
+    };
 
     function updateRotation(angle) {
         return function (event, newState) {
             let degree = newState.value
             var angleRadian = (degree * Math.PI) / 180;
             rotation[angle] = angleRadian;
+        };
+    }
+
+    function updateTranslation(axis) {
+        return function (event, newState) {
+            translation[axis]= newState.value;
         };
     }
 
@@ -47,6 +58,7 @@ function main() {
         max: 360,
         min: 0,
     });
+
     setupSlider("#angleY", {
         name: "angle y",
         value: radianToDegree(rotation[1]),
@@ -54,12 +66,37 @@ function main() {
         max: 360,
         min: 0,
     });
+
     setupSlider("#angleZ", {
         name: "angle z",
         value: radianToDegree(rotation[2]),
         slideFunction: updateRotation(2),
         max: 360,
         min: 0,
+    });
+
+    setupSlider("#translationX", {
+        name: "translation X",
+        value: translation.xOffset,
+        slideFunction: updateTranslation("xOffset"),
+        max: 1,
+        min: -1
+    });
+
+    setupSlider("#translationY", {
+        name: "translation Y",
+        value: translation.yOffset,
+        slideFunction: updateTranslation("yOffset"),
+        max: 1,
+        min: -1
+    });
+
+    setupSlider("#translationZ", {
+        name: "translation Z",
+        value: translation.zOffset,
+        slideFunction: updateTranslation("zOffset"),
+        max: 1,
+        min: -1
     });
 
     let size = 4; // 4 components per iteration
@@ -102,6 +139,7 @@ function main() {
         matrix = mat4.xRotate(matrix, rotation[0]);
         matrix = mat4.yRotate(matrix, rotation[1]);
         matrix = mat4.zRotate(matrix, rotation[2]);
+        matrix = mat4.translate(matrix, translation.xOffset, translation.yOffset, translation.zOffset);
 
         gl.uniformMatrix4fv(matrixLocation, false, matrix);
 

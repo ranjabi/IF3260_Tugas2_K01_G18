@@ -7,6 +7,15 @@ let mat4 = {
             0, 0, 0, 1,
         ]
     },
+
+    translation: function(xOffset, yOffset, zOffset) {
+        return [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            xOffset, yOffset, zOffset, 1,
+        ];
+    },
    
     xRotation: function(angleInRadian) {
         let cos = Math.cos(angleInRadian);
@@ -71,6 +80,10 @@ let mat4 = {
     zRotate: function(m, angleInRadian) {
         return mat4.multiply(m, mat4.zRotation(angleInRadian));
     },
+
+    translate: function(m, xOffset, yOffset, zOffset) {
+        return mat4.multiply(m, mat4.translation(xOffset, yOffset, zOffset));
+    }
 
 };
 
