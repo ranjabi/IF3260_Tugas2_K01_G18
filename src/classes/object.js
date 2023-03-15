@@ -2,9 +2,9 @@
  * @class ObjectModel
  */
 export default class BaseObject {
-    constructor() {
-        this.vertices = [];
-        this.colors = [];
+    constructor(vertices = [], colors = []) {
+        this.vertices = vertices;
+        this.colors = colors;
     }
 
     getVertices() {
