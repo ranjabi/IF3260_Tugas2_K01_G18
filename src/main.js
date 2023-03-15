@@ -31,11 +31,14 @@ function main() {
     let colors = hollow_cube.getFlattenColor();
 
     let rotation = [degreeToRadian(30), degreeToRadian(30), degreeToRadian(0)];
+
     let translation = {
         xOffset: 0,
         yOffset: 0,
         zOffset: 0
     };
+
+    let scale = 1;
 
     function updateRotation(angle) {
         return function (event, newState) {
@@ -48,6 +51,12 @@ function main() {
     function updateTranslation(axis) {
         return function (event, newState) {
             translation[axis]= newState.value;
+        };
+    }
+
+    function updateScaling() {
+        return function (event, newState) {
+            scale = newState.value;
         };
     }
 
@@ -99,6 +108,16 @@ function main() {
         min: -1
     });
 
+    setupSlider("#scaling", {
+        name: "scaling",
+        value: scale,
+        slideFunction: updateScaling(),
+        max: 1.5,
+        min: 0.5
+    });
+
+
+
     let size = 4; // 4 components per iteration
     let type = gl.FLOAT; // the data is 32bit floats
     let normalize = false; // don't normalize the data
@@ -140,6 +159,7 @@ function main() {
         matrix = mat4.yRotate(matrix, rotation[1]);
         matrix = mat4.zRotate(matrix, rotation[2]);
         matrix = mat4.translate(matrix, translation.xOffset, translation.yOffset, translation.zOffset);
+        matrix = mat4.scale(matrix, scale);
 
         gl.uniformMatrix4fv(matrixLocation, false, matrix);
 

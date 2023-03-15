@@ -7,16 +7,23 @@ let mat4 = {
             0, 0, 0, 1,
         ]
     },
-
-    translation: function(xOffset, yOffset, zOffset) {
-        return [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            xOffset, yOffset, zOffset, 1,
-        ];
-    },
    
+    multiply: function(matrix1, matrix2) {
+        let result = [];
+        
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+            let sum = 0;
+            for (let k = 0; k < 4; k++) {
+                sum += matrix1[i*4+k] * matrix2[k*4+j];
+            }
+            result[i*4+j] = sum;
+            }
+        }
+        
+        return result;
+    },
+
     xRotation: function(angleInRadian) {
         let cos = Math.cos(angleInRadian);
         let sin = Math.sin(angleInRadian);
@@ -53,22 +60,25 @@ let mat4 = {
         ];
     },
 
-    multiply: function(matrix1, matrix2) {
-        let result = [];
-        
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-            let sum = 0;
-            for (let k = 0; k < 4; k++) {
-                sum += matrix1[i*4+k] * matrix2[k*4+j];
-            }
-            result[i*4+j] = sum;
-            }
-        }
-        
-        return result;
-    },
      
+    translation: function(xOffset, yOffset, zOffset) {
+        return [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            xOffset, yOffset, zOffset, 1,
+        ];
+    },
+
+    scaling: function(scale) {
+        return [
+            scale, 0, 0, 0,
+            0, scale, 0, 0,
+            0, 0, scale, 0,
+            0, 0, 0, 1,
+        ];
+    },
+
     xRotate: function(m, angleInRadian) {
         return mat4.multiply(m, mat4.xRotation(angleInRadian));
     },
@@ -83,6 +93,10 @@ let mat4 = {
 
     translate: function(m, xOffset, yOffset, zOffset) {
         return mat4.multiply(m, mat4.translation(xOffset, yOffset, zOffset));
+    },
+
+    scale: function(m, scale) {
+        return mat4.multiply(m, mat4.scaling(scale));
     }
 
 };
