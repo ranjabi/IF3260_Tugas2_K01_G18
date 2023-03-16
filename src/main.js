@@ -40,6 +40,8 @@ function main() {
 
     let scale = 1;
 
+    let fudgeFactor = 1;
+
     function updateRotation(angle) {
         return function (event, newState) {
             let degree = newState.value
@@ -60,6 +62,20 @@ function main() {
         };
     }
 
+    function updateFudgeFactor() {
+        return function (event, newState) {
+            fudgeFactor = newState.value;
+        };
+    }
+
+    setupSlider("#fudgeFactor", {
+        name: "fedge factor",
+        value: fudgeFactor,
+        slideFunction: updateFudgeFactor(),
+        max: 2,
+        min: 0,
+    });
+    
     setupSlider("#angleX", {
         name: "angle x",
         value: radianToDegree(rotation[0]),
@@ -88,24 +104,24 @@ function main() {
         name: "translation X",
         value: translation.xOffset,
         slideFunction: updateTranslation("xOffset"),
-        max: 1,
-        min: -1
+        max: 10,
+        min: -10
     });
 
     setupSlider("#translationY", {
         name: "translation Y",
         value: translation.yOffset,
         slideFunction: updateTranslation("yOffset"),
-        max: 1,
-        min: -1
+        max: 10,
+        min: -10
     });
 
     setupSlider("#translationZ", {
         name: "translation Z",
         value: translation.zOffset,
         slideFunction: updateTranslation("zOffset"),
-        max: 1,
-        min: -1
+        max: 10,
+        min: -10
     });
 
     setupSlider("#scaling", {
@@ -154,11 +170,12 @@ function main() {
     function render() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        let matrix = mat4.identity();
+        let matrix = mat4.makeZToWMatrix(fudgeFactor);
+        matrix = mat4.translate(matrix, translation.xOffset, translation.yOffset, translation.zOffset);
+        
         matrix = mat4.xRotate(matrix, rotation[0]);
         matrix = mat4.yRotate(matrix, rotation[1]);
         matrix = mat4.zRotate(matrix, rotation[2]);
-        matrix = mat4.translate(matrix, translation.xOffset, translation.yOffset, translation.zOffset);
         matrix = mat4.scale(matrix, scale);
 
         gl.uniformMatrix4fv(matrixLocation, false, matrix);

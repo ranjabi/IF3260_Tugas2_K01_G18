@@ -97,6 +97,15 @@ let mat4 = {
 
     scale: function(m, scale) {
         return mat4.multiply(m, mat4.scaling(scale));
+    },
+
+    makeZToWMatrix: function(fudgeFactor) {
+        return [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, fudgeFactor,
+            0, 0, 0, 1,
+        ]
     }
 
 };
