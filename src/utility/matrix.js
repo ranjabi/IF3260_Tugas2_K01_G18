@@ -17,7 +17,7 @@ let mat4 = {
             for (let j = 0; j < 4; j++) {
             let sum = 0;
             for (let k = 0; k < 4; k++) {
-                sum += matrix1[i*4+k] * matrix2[k*4+j];
+                sum += matrix2[i*4+k] * matrix1[k*4+j];
             }
             result[i*4+j] = sum;
             }

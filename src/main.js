@@ -36,16 +36,16 @@ function main() {
     let translation = {
         xOffset: 0,
         yOffset: 0,
-        zOffset: 0
+        zOffset: -1
     };
 
     let scale = 1;
 
     let perspectiveProjection = {
-        fov: 10,
+        fov: 150,
         aspect: gl.canvas.clientWidth / gl.canvas.clientHeight,
-        zNear: 1,
-        zFar: 10
+        zNear: 0.2,
+        zFar: 2000
       }
 
     function updateRotation(angle) {
@@ -141,15 +141,15 @@ function main() {
     setupSlider("#zNear", {
         name: "zNear",
         value: perspectiveProjection.zNear,
-        max: 50,
-        min: 1,
+        max: 1,
+        min: 0,
         slideFunction: updatePerspectiveProjection("zNear")
     });
 
     setupSlider("#zFar", {
         name: "zFar",
         value: perspectiveProjection.zFar,
-        max: 50,
+        max: 2000,
         min: 1,
         slideFunction: updatePerspectiveProjection("zFar")
     });
@@ -193,11 +193,10 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         let matrix = mat4.perspective(perspectiveProjection.fov, perspectiveProjection.aspect, perspectiveProjection.zNear, perspectiveProjection.zFar);
-        // let matrix = mat4.identity();
+        matrix = mat4.translate(matrix, translation.xOffset, translation.yOffset, translation.zOffset);
         matrix = mat4.xRotate(matrix, rotation[0]);
         matrix = mat4.yRotate(matrix, rotation[1]);
         matrix = mat4.zRotate(matrix, rotation[2]);
-        matrix = mat4.translate(matrix, translation.xOffset, translation.yOffset, translation.zOffset);
         matrix = mat4.scale(matrix, scale);
 
         gl.uniformMatrix4fv(matrixLocation, false, matrix);
