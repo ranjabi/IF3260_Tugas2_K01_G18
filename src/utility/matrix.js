@@ -99,6 +99,15 @@ let mat4 = {
         ];
     },
 
+    orthographic: function() {
+        return [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, -1, 0,
+            0, 0, 0, 1
+        ]
+    },
+
     xRotate: function(m, angleInRadian) {
         return mat4.multiply(m, mat4.xRotation(angleInRadian));
     },

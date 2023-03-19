@@ -36,7 +36,7 @@ function main() {
     let translation = {
         xOffset: 0,
         yOffset: 0,
-        zOffset: -1
+        zOffset: 0
     };
 
     let scale = 1;
@@ -192,7 +192,8 @@ function main() {
     function render() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        let matrix = mat4.perspective(perspectiveProjection.fov, perspectiveProjection.aspect, perspectiveProjection.zNear, perspectiveProjection.zFar);
+        let matrix = mat4.orthographic();
+        //let matrix = mat4.perspective(perspectiveProjection.fov, perspectiveProjection.aspect, perspectiveProjection.zNear, perspectiveProjection.zFar);
         matrix = mat4.translate(matrix, translation.xOffset, translation.yOffset, translation.zOffset);
         matrix = mat4.xRotate(matrix, rotation[0]);
         matrix = mat4.yRotate(matrix, rotation[1]);
