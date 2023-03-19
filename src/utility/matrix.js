@@ -1,3 +1,5 @@
+import { degreeToRadian } from "./math.js";
+
 let mat4 = {
     identity: function() {
         return [
@@ -15,7 +17,7 @@ let mat4 = {
             for (let j = 0; j < 4; j++) {
             let sum = 0;
             for (let k = 0; k < 4; k++) {
-                sum += matrix1[i*4+k] * matrix2[k*4+j];
+                sum += matrix2[i*4+k] * matrix1[k*4+j];
             }
             result[i*4+j] = sum;
             }
@@ -23,6 +25,11 @@ let mat4 = {
         
         return result;
     },
+
+    
+
+
+
 
     xRotation: function(angleInRadian) {
         let cos = Math.cos(angleInRadian);
@@ -79,6 +86,28 @@ let mat4 = {
         ];
     },
 
+    perspective: function(fov, aspect, zNear, zFar) {
+        var fovInRadian = degreeToRadian(fov);
+        var f = Math.tan(Math.PI * 0.5 - 0.5 * fovInRadian);
+        var rangeInv = 1.0 / (zNear - zFar);
+
+        return [
+            f/aspect, 0, 0, 0,
+            0, f, 0, 0,
+            0,0, (zNear + zFar) * rangeInv, -1,
+            0,0, zNear * zFar * rangeInv * 2, 0
+        ];
+    },
+
+    orthographic: function() {
+        return [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, -1, 0,
+            0, 0, 0, 1
+        ]
+    },
+
     xRotate: function(m, angleInRadian) {
         return mat4.multiply(m, mat4.xRotation(angleInRadian));
     },
@@ -97,8 +126,11 @@ let mat4 = {
 
     scale: function(m, scale) {
         return mat4.multiply(m, mat4.scaling(scale));
-    }
+    },
 
+    changeProjectionToPerspective: function(m) {
+        return mat4.multiply(m, mat4.inverse(mat4.perspective()));
+    }
 };
 
 export {mat4};

@@ -27,6 +27,7 @@ function main() {
     // dummy object
     let hollow_cube = new BaseObject();
     hollow_cube.initCube();
+
     let vertices = hollow_cube.getFlattenVertices();
     let colors = hollow_cube.getFlattenColor();
 
@@ -39,6 +40,13 @@ function main() {
     };
 
     let scale = 1;
+
+    let perspectiveProjection = {
+        fov: 150,
+        aspect: gl.canvas.clientWidth / gl.canvas.clientHeight,
+        zNear: 0.2,
+        zFar: 2000
+      }
 
     function updateRotation(angle) {
         return function (event, newState) {
@@ -57,6 +65,12 @@ function main() {
     function updateScaling() {
         return function (event, newState) {
             scale = newState.value;
+        };
+    }
+
+    function updatePerspectiveProjection(axis) {
+        return function (event, newState) {
+            perspectiveProjection[axis] = newState.value;  
         };
     }
 
@@ -116,6 +130,30 @@ function main() {
         min: 0.5
     });
 
+    setupSlider("#fov", {
+        name: "fov",
+        value: perspectiveProjection.fov,
+        max: 359,
+        min: 1,
+        slideFunction: updatePerspectiveProjection("fov")
+    });
+
+    setupSlider("#zNear", {
+        name: "zNear",
+        value: perspectiveProjection.zNear,
+        max: 1,
+        min: 0,
+        slideFunction: updatePerspectiveProjection("zNear")
+    });
+
+    setupSlider("#zFar", {
+        name: "zFar",
+        value: perspectiveProjection.zFar,
+        max: 2000,
+        min: 1,
+        slideFunction: updatePerspectiveProjection("zFar")
+    });
+
 
 
     let size = 4; // 4 components per iteration
@@ -154,11 +192,12 @@ function main() {
     function render() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        let matrix = mat4.identity();
+        let matrix = mat4.orthographic();
+        //let matrix = mat4.perspective(perspectiveProjection.fov, perspectiveProjection.aspect, perspectiveProjection.zNear, perspectiveProjection.zFar);
+        matrix = mat4.translate(matrix, translation.xOffset, translation.yOffset, translation.zOffset);
         matrix = mat4.xRotate(matrix, rotation[0]);
         matrix = mat4.yRotate(matrix, rotation[1]);
         matrix = mat4.zRotate(matrix, rotation[2]);
-        matrix = mat4.translate(matrix, translation.xOffset, translation.yOffset, translation.zOffset);
         matrix = mat4.scale(matrix, scale);
 
         gl.uniformMatrix4fv(matrixLocation, false, matrix);
