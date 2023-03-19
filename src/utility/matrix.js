@@ -26,7 +26,6 @@ let mat4 = {
         return result;
     },
 
-    
 
 
 
@@ -126,10 +125,6 @@ let mat4 = {
 
     scale: function(m, scale) {
         return mat4.multiply(m, mat4.scaling(scale));
-    },
-
-    changeProjectionToPerspective: function(m) {
-        return mat4.multiply(m, mat4.inverse(mat4.perspective()));
     }
 };
 
