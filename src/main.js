@@ -69,13 +69,6 @@ function main() {
         return matrix;
     }
 
-    var projectionType = document.getElementById("projection-type");
-    projectionType.addEventListener("change", function (event) {
-        state.projectionType = event.target.value;
-        state.rotation.xAngle = degreeToRadian(0);
-        state.rotation.yAngle = degreeToRadian(0);
-    })
-
     function updateRotation(angle) {
         return function (event, newState) {
             let degree = newState.value
@@ -102,8 +95,8 @@ function main() {
         };
     }
 
-
-    setupSlider("#angleX", {
+    /* SETUP ALL SLIDER */
+    let angleXSlider = setupSlider("#angleX", {
         name: "angle x",
         value: radianToDegree(state.rotation.xAngle),
         slideFunction: updateRotation("xAngle"),
@@ -111,7 +104,7 @@ function main() {
         min: 0,
     });
 
-    setupSlider("#angleY", {
+    let angleYSlider = setupSlider("#angleY", {
         name: "angle y",
         value: radianToDegree(state.rotation.yAngle),
         slideFunction: updateRotation("yAngle"),
@@ -119,7 +112,7 @@ function main() {
         min: 0,
     });
 
-    setupSlider("#angleZ", {
+    let angleZSlider = setupSlider("#angleZ", {
         name: "angle z",
         value: radianToDegree(state.rotation.zAngle),
         slideFunction: updateRotation("zAngle"),
@@ -127,7 +120,7 @@ function main() {
         min: 0,
     });
 
-    setupSlider("#translationX", {
+    let translationX = setupSlider("#translationX", {
         name: "translation X",
         value: state.translation.xOffset,
         slideFunction: updateTranslation("xOffset"),
@@ -135,7 +128,7 @@ function main() {
         min: -1
     });
 
-    setupSlider("#translationY", {
+    let translationY = setupSlider("#translationY", {
         name: "translation Y",
         value: state.translation.yOffset,
         slideFunction: updateTranslation("yOffset"),
@@ -143,7 +136,7 @@ function main() {
         min: -1
     });
 
-    setupSlider("#translationZ", {
+    let translationZ = setupSlider("#translationZ", {
         name: "translation Z",
         value: state.translation.zOffset,
         slideFunction: updateTranslation("zOffset"),
@@ -151,7 +144,7 @@ function main() {
         min: -1
     });
 
-    setupSlider("#scaling", {
+    let scaling = setupSlider("#scaling", {
         name: "scaling",
         value: state.scale,
         slideFunction: updateScaling(),
@@ -159,7 +152,7 @@ function main() {
         min: 0.5
     });
 
-    setupSlider("#fov", {
+    let fov = setupSlider("#fov", {
         name: "fov",
         value: state.perspectiveProjection.fov,
         max: 359,
@@ -167,7 +160,7 @@ function main() {
         slideFunction: updatePerspectiveProjection("fov")
     });
 
-    setupSlider("#zNear", {
+    let zNear = setupSlider("#zNear", {
         name: "zNear",
         value: state.perspectiveProjection.zNear,
         max: 1,
@@ -175,15 +168,30 @@ function main() {
         slideFunction: updatePerspectiveProjection("zNear")
     });
 
-    setupSlider("#zFar", {
+    let zFar = setupSlider("#zFar", {
         name: "zFar",
         value: state.perspectiveProjection.zFar,
         max: 2000,
         min: 1,
         slideFunction: updatePerspectiveProjection("zFar")
     });
+    /* END OF SETUP ALL SLIDER */
 
-
+    var projectionType = document.getElementById("projection-type");
+    projectionType.addEventListener("change", function (event) {
+        state.projectionType = event.target.value;
+        if (state.projectionType == "oblique") {
+            state.rotation.xAngle = degreeToRadian(0);
+            state.rotation.yAngle = degreeToRadian(0);
+            angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
+            angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
+        } else {
+            state.rotation.xAngle = degreeToRadian(30);
+            state.rotation.yAngle = degreeToRadian(30);
+            angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
+            angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
+        }
+    })
 
     let size = 4; // 4 components per iteration
     let type = gl.FLOAT; // the data is 32bit floats

@@ -73,8 +73,9 @@ function setupSlider(selector, options) {
     let slider = document.getElementById(selectorInput);
     let sliderValue = document.getElementById(selectorValue);
 
-    function updateValue(value) {
-        sliderValue.textContent = value;
+    function updateValue(newValue) {
+        sliderValue.textContent = newValue.toFixed(2);
+        slider.value = newValue;
     }
 
     function handleChange(event) {
@@ -84,6 +85,8 @@ function setupSlider(selector, options) {
     }
 
     slider.addEventListener("input", handleChange);
+
+    return {slider, updateValue}
 }
 
 export { setupSlider, createShader, createProgram };
