@@ -46,9 +46,11 @@ function main() {
         perspectiveProjection: {
             fov: 150,
             aspect: gl.canvas.clientWidth / gl.canvas.clientHeight,
-            zNear: 0.2,
+            zNear: 0.1,
             zFar: 2000,
         },
+        cameraAngle: 0,
+        cameraRadius: 0.8,
         projectionType: "perspective"
     }
 
@@ -61,11 +63,6 @@ function main() {
         } else if (state.projectionType == "oblique") {
             matrix = mat4.oblique();
         }
-        matrix = mat4.translate(matrix, state.translation.xOffset, state.translation.yOffset, state.translation.zOffset);
-        matrix = mat4.xRotate(matrix, state.rotation.xAngle);
-        matrix = mat4.yRotate(matrix, state.rotation.yAngle);
-        matrix = mat4.zRotate(matrix, state.rotation.zAngle);
-        matrix = mat4.scale(matrix, state.scale);
         return matrix;
     }
 
@@ -175,6 +172,27 @@ function main() {
         min: 1,
         slideFunction: updatePerspectiveProjection("zFar")
     });
+
+    let cameraAngle = setupSlider("#cameraAngle", {
+        name: "cameraAngle",
+        value: state.cameraAngle,
+        max: 360,
+        min: 0,
+        slideFunction: function (event, newState) {
+            state.cameraAngle = newState.value;
+        }
+    });
+
+    let cameraRadius = setupSlider("#cameraRadius", {
+        name: "cameraRadius",
+        value: state.cameraRadius,
+        max: 2,
+        min: -2,
+        slideFunction: function (event, newState) {
+            state.cameraRadius = newState.value;
+        },
+        step: 0.1
+    });
     /* END OF SETUP ALL SLIDER */
 
     var projectionType = document.getElementById("projection-type");
@@ -185,11 +203,25 @@ function main() {
             state.rotation.yAngle = degreeToRadian(0);
             angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
             angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
-        } else {
+
+            state.cameraRadius = 0;
+            cameraRadius.updateValue(state.cameraRadius);
+        } else if (state.projectionType == "orthographic") {
             state.rotation.xAngle = degreeToRadian(30);
             state.rotation.yAngle = degreeToRadian(30);
             angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
             angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
+
+            state.cameraRadius = 0.5;
+            cameraRadius.updateValue(state.cameraRadius);
+        } else if (state.projectionType == "perspective") {
+            state.rotation.xAngle = degreeToRadian(30);
+            state.rotation.yAngle = degreeToRadian(30);
+            angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
+            angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
+
+            state.cameraRadius = 0.8;
+            cameraRadius.updateValue(state.cameraRadius);
         }
     })
 
@@ -230,6 +262,20 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         let matrix = computeModelMatrix()
+
+        let cameraAngleInRadians = degreeToRadian(state.cameraAngle);
+        let cameraMatrix = mat4.yRotation(cameraAngleInRadians)
+        cameraMatrix = mat4.translate(cameraMatrix, 0, 0, state.cameraRadius);
+        let viewMatrix = mat4.inverse(cameraMatrix);
+        let viewProjectionMatrix = mat4.multiply(matrix, viewMatrix)
+
+        matrix = viewProjectionMatrix
+
+        matrix = mat4.translate(matrix, state.translation.xOffset, state.translation.yOffset, state.translation.zOffset);
+        matrix = mat4.xRotate(matrix, state.rotation.xAngle);
+        matrix = mat4.yRotate(matrix, state.rotation.yAngle);
+        matrix = mat4.zRotate(matrix, state.rotation.zAngle);
+        matrix = mat4.scale(matrix, state.scale);
 
         gl.uniformMatrix4fv(matrixLocation, false, matrix);
 
