@@ -59,7 +59,7 @@ function main() {
         } else if (state.projectionType == "perspective") {
             matrix = mat4.perspective(state.perspectiveProjection.fov, state.perspectiveProjection.aspect, state.perspectiveProjection.zNear, state.perspectiveProjection.zFar);
         } else if (state.projectionType == "oblique") {
-            matrix = mat4.identity();
+            matrix = mat4.oblique();
         }
         matrix = mat4.translate(matrix, state.translation.xOffset, state.translation.yOffset, state.translation.zOffset);
         matrix = mat4.xRotate(matrix, state.rotation.xAngle);
@@ -72,6 +72,8 @@ function main() {
     var projectionType = document.getElementById("projection-type");
     projectionType.addEventListener("change", function (event) {
         state.projectionType = event.target.value;
+        state.rotation.xAngle = degreeToRadian(0);
+        state.rotation.yAngle = degreeToRadian(0);
     })
 
     function updateRotation(angle) {
