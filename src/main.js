@@ -32,7 +32,11 @@ function main() {
     let colors = hollow_cube.getFlattenColor();
 
     let state = {
-        rotation: [degreeToRadian(30), degreeToRadian(30), degreeToRadian(0)],
+        rotation: {
+            xAngle: degreeToRadian(30), 
+            yAngle: degreeToRadian(30), 
+            zAngle: degreeToRadian(0)
+        },
         translation: {
             xOffset: 0,
             yOffset: 0,
@@ -58,9 +62,9 @@ function main() {
             matrix = mat4.identity();
         }
         matrix = mat4.translate(matrix, state.translation.xOffset, state.translation.yOffset, state.translation.zOffset);
-        matrix = mat4.xRotate(matrix, state.rotation[0]);
-        matrix = mat4.yRotate(matrix, state.rotation[1]);
-        matrix = mat4.zRotate(matrix, state.rotation[2]);
+        matrix = mat4.xRotate(matrix, state.rotation.xAngle);
+        matrix = mat4.yRotate(matrix, state.rotation.yAngle);
+        matrix = mat4.zRotate(matrix, state.rotation.zAngle);
         matrix = mat4.scale(matrix, state.scale);
         return matrix;
     }
@@ -99,24 +103,24 @@ function main() {
 
     setupSlider("#angleX", {
         name: "angle x",
-        value: radianToDegree(state.rotation[0]),
-        slideFunction: updateRotation(0),
+        value: radianToDegree(state.rotation.xAngle),
+        slideFunction: updateRotation("xAngle"),
         max: 360,
         min: 0,
     });
 
     setupSlider("#angleY", {
         name: "angle y",
-        value: radianToDegree(state.rotation[1]),
-        slideFunction: updateRotation(1),
+        value: radianToDegree(state.rotation.yAngle),
+        slideFunction: updateRotation("yAngle"),
         max: 360,
         min: 0,
     });
 
     setupSlider("#angleZ", {
         name: "angle z",
-        value: radianToDegree(state.rotation[2]),
-        slideFunction: updateRotation(2),
+        value: radianToDegree(state.rotation.zAngle),
+        slideFunction: updateRotation("zAngle"),
         max: 360,
         min: 0,
     });
