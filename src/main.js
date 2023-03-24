@@ -66,10 +66,11 @@ function main() {
         return matrix;
     }
 
+    var angleRadian
     function updateRotation(angle) {
         return function (event, newState) {
             let degree = newState.value
-            var angleRadian = (degree * Math.PI) / 180;
+            angleRadian = (degree * Math.PI) / 180;
             state.rotation[angle] = angleRadian;
         };
     }
@@ -246,15 +247,22 @@ function main() {
     );
     gl.enableVertexAttribArray(vertexPosition);
 
-    let colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    // let colorBuffer = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
-    let vertexColor = gl.getAttribLocation(program, "vColor");
-    gl.vertexAttribPointer(vertexColor, size, type, normalize, stride, offset);
-    gl.enableVertexAttribArray(vertexColor);
+    // let vertexColor = gl.getAttribLocation(program, "vColor");
+    // gl.vertexAttribPointer(vertexColor, size, type, normalize, stride, offset);
+    // gl.enableVertexAttribArray(vertexColor);
 
-    let matrixLocation = gl.getUniformLocation(program, "uMatrix");
+    let vertexNormal = gl.getAttribLocation(program, "vNormal");
+    gl.vertexAttribPointer(vertexNormal, size, type, normalize, stride, offset)
+    gl.enableVertexAttribArray(vertexNormal);
+
+    let worldViewProjectionLocation = gl.getUniformLocation(program, "uWorldViewProjection");
+    let worldLocation = gl.getUniformLocation(program, "uWorld");
+    let colorLocation = gl.getUniformLocation(program, "uColor");
+    var reverseLightDirectionLocation = gl.getUniformLocation(program, "uReverseLightDirection");
 
     render();
 
@@ -267,7 +275,9 @@ function main() {
         let cameraMatrix = mat4.yRotation(cameraAngleInRadians)
         cameraMatrix = mat4.translate(cameraMatrix, 0, 0, state.cameraRadius);
         let viewMatrix = mat4.inverse(cameraMatrix);
-        let viewProjectionMatrix = mat4.multiply(matrix, viewMatrix)
+        let viewProjectionMatrix = mat4.multiply(matrix, viewMatrix);
+        let worldMatrix = mat4.yRotation(angleRadian);
+        let worldViewProjectionMatrix = mat4.multiply(viewProjectionMatrix, worldMatrix);
 
         matrix = viewProjectionMatrix
 
@@ -277,7 +287,10 @@ function main() {
         matrix = mat4.zRotate(matrix, state.rotation.zAngle);
         matrix = mat4.scale(matrix, state.scale);
 
-        gl.uniformMatrix4fv(matrixLocation, false, matrix);
+        gl.uniformMatrix4fv(worldViewProjectionLocation, false, worldViewProjectionMatrix);
+        gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
+        gl.uniform4fv(colorLocation, new Float32Array([0.5, 1, 0.5, 1]));
+        gl.uniform3fv(reverseLightDirectionLocation, mat4.normalize([0.5, 0.7, 1]));
 
         gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
         requestAnimationFrame(render);
