@@ -291,8 +291,6 @@ function main() {
         cameraMatrix = mat4.translate(cameraMatrix, 0, 0, state.cameraRadius);
         let viewMatrix = mat4.inverse(cameraMatrix);
         let viewProjectionMatrix = mat4.multiply(matrix, viewMatrix);
-        let worldMatrix = mat4.yRotation(angleRadian);
-        let worldViewProjectionMatrix = mat4.multiply(viewProjectionMatrix, worldMatrix);
 
         matrix = viewProjectionMatrix
 
@@ -302,9 +300,12 @@ function main() {
         matrix = mat4.zRotate(matrix, state.rotation.zAngle);
         matrix = mat4.scale(matrix, state.scale);
 
-        gl.uniformMatrix4fv(worldViewProjectionLocation, false, worldViewProjectionMatrix);
+        let worldMatrix = mat4.yRotation(angleRadian);
+        let worldViewProjectionMatrix = mat4.multiply(viewProjectionMatrix, worldMatrix);
+        
+        gl.uniformMatrix4fv(worldViewProjectionLocation, false, matrix);
         gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
-        gl.uniform4fv(colorLocation, new Float32Array([0.5, 1, 0.5, 1]));
+        gl.uniform4fv(colorLocation, new Float32Array([0.2, 1, 0.2, 1]));
         gl.uniform3fv(reverseLightDirectionLocation, mat4.normalize([0.5, 0.7, 1]));
 
         gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
