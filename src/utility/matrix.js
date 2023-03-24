@@ -225,6 +225,26 @@ let mat4 = {
 
     scale: function(m, scale) {
         return mat4.multiply(m, mat4.scaling(scale));
+    },
+
+    cross(a, b) {
+        return [Number(a[1]) * Number(b[2]) - Number(a[2]) * Number(b[1]),
+                Number(a[2]) * Number(b[0]) - Number(a[0]) * Number(b[2]),
+                Number(a[0]) * Number(b[1]) - Number(a[1]) * Number(b[0])];
+    },
+    
+    substraction(a, b) {
+        return [Number(a[0]) - Number(b[0]), Number(a[1]) - Number(b[1]), Number(a[2]) - Number(b[2])];
+    },
+
+    normalize(v) {
+        var length = Math.sqrt(Number(v[0]) * Number(v[0]) + Number(v[1]) * Number(v[1]) + Number(v[2]) * Number(v[2]));
+        
+        if (length > 0.00001) {
+          return [Number(v[0]) / length, Number(v[1]) / length, Number(v[2]) / length];
+        } else {
+          return [0, 0, 0];
+        }
     }
 };
 

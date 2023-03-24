@@ -1,17 +1,23 @@
 import Point from "./vertex.js";
 import Color from "./color.js";
+import { mat4 } from "../utility/matrix.js";
 
 /**
  * @class ObjectModel
  */
 export default class BaseObject {
-    constructor(vertices = [], colors = []) {
+    constructor(vertices = [], colors = [], normals = []) {
         this.vertices = vertices;
+        this.normals = normals;
         this.colors = colors;
     }
 
     getVertices() {
         return this.vertices;
+    }
+
+    getNormals() {
+        return this.normals;
     }
 
     getColors() {
@@ -27,6 +33,16 @@ export default class BaseObject {
             flattenVertices.push(1.0);
         }
         return flattenVertices;
+    }
+
+    getFlattenNormals() {
+        let flattenNormals = [];
+        for (let i = 0; i < this.normals.length; i++) {
+            flattenNormals.push(this.normals[i].x);
+            flattenNormals.push(this.normals[i].y);
+            flattenNormals.push(this.normals[i].z);
+        }
+        return flattenNormals;
     }
 
     getFlattenColor() {
@@ -78,6 +94,35 @@ export default class BaseObject {
                     self.colors.push(color);
                 }
             }
+
+            // for each plane in rectangle (6 plane)
+            for (let j = 0; j < vertices.length / 8; j++) {
+                // for each point in rectangle
+                for (let i = 0; i < indices.length; i=i+3) {
+
+                    let vector1 = mat4.substraction(
+                        vertices[indices[i+2] + 8 * j],
+                        vertices[indices[i+1] + 8 * j]
+                    )
+
+                    let vector2 = mat4.substraction(
+                        vertices[indices[i] + 8 * j], 
+                        vertices[indices[i+1] + 8 * j]
+                    )
+
+                    let cross = mat4.cross(vector1, vector2)
+                    let normalize = mat4.normalize(cross)
+                    let [nX, nY, nZ] = normalize
+                    let normals = new Point(nX, nY, nZ)
+
+                    self.normals.push(normals)
+                    self.normals.push(normals)
+                    self.normals.push(normals)
+
+                }
+            }
+
+            
         }
     
         function cubeBaseVertices() {
@@ -111,49 +156,39 @@ export default class BaseObject {
                 return points;
             }
             
-            let delta = 0.4; // cube size
+            let delta = 0.6; // cube size
             let point = 0.3; // x y z point reference,
             let outputPoints = [];
             
-            // top left front
+            // top right front
             generate_cube_points([-point, point, -point], outputPoints, {xdelta: delta});
-            generate_cube_points([-point, point, -point], outputPoints, {ydelta: -delta});
+            generate_cube_points([-point, point, -point], outputPoints, {ydelta: 0});
             generate_cube_points([-point, point, -point], outputPoints, {zdelta: delta});
             
-            //top right front
-            generate_cube_points([point, point, -point], outputPoints, {xdelta: -delta});
-            generate_cube_points([point, point, -point], outputPoints, {ydelta: -delta});
+            // top left front
+            generate_cube_points([point, point, -point], outputPoints, {xdelta: 0});
+            generate_cube_points([point, point, -point], outputPoints, {ydelta: 0});
             generate_cube_points([point, point, -point], outputPoints, {zdelta: delta});
             
-            // bottom right front
-            generate_cube_points([point, -point, -point], outputPoints, {xdelta: -delta});
+            // bottom left front
+            generate_cube_points([point, -point, -point], outputPoints, {xdelta: 0});
             generate_cube_points([point, -point, -point], outputPoints, {ydelta: delta});
             generate_cube_points([point, -point, -point], outputPoints, {zdelta: delta});
             
-            // bottom left front
+            // bottom right front
             generate_cube_points([-point, -point, -point], outputPoints, {xdelta: delta});
             generate_cube_points([-point, -point, -point], outputPoints, {ydelta: delta});
             generate_cube_points([-point, -point, -point], outputPoints, {zdelta: delta});
             
             // top right back
-            generate_cube_points([point+0.1, point, point], outputPoints, {xdelta: -delta});
-            generate_cube_points([point, point, point], outputPoints, {ydelta: -delta});
-            generate_cube_points([point, point, point], outputPoints, {zdelta: -delta});
-            
-            // top left back
             generate_cube_points([-point, point, point], outputPoints, {xdelta: delta});
-            generate_cube_points([-point, point, point], outputPoints, {ydelta: -delta});
-            generate_cube_points([-point, point, point], outputPoints, {zdelta: -delta});
-            
-            // bottom left back
-            generate_cube_points([-point, -point, point], outputPoints, {xdelta: delta});
-            generate_cube_points([-point, -point, point], outputPoints, {ydelta: delta});
-            generate_cube_points([-point, -point, point], outputPoints, {zdelta: -delta});
             
             // bottom right back
-            generate_cube_points([point, -point, point], outputPoints, {xdelta: -delta});
-            generate_cube_points([point, -point, point], outputPoints, {ydelta: delta});
-            generate_cube_points([point, -point, point], outputPoints, {zdelta: -delta});
+            generate_cube_points([-point, -point, point], outputPoints, {xdelta: delta});
+            generate_cube_points([-point, -point, point], outputPoints, {ydelta: delta});
+            
+            // bottom left back
+            generate_cube_points([point, -point, point], outputPoints, {ydelta: delta+0.1});
     
             return outputPoints
         }   
