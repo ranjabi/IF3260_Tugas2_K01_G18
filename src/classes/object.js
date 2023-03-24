@@ -196,7 +196,7 @@ export default class BaseObject {
 
 
     initRandomHollow() {
-        let vertices = [
+        let baseVertices = [
             // outer horizontal left back top 0
             [-0.5, 0, -0.5],
             // outer horizontal right back top 1
@@ -313,7 +313,7 @@ export default class BaseObject {
 
         ]
 
-        let colors = [
+        let baseColors = [
             [0.0, 0.0, 0.0, 1.0], // black
             [1.0, 0.0, 0.0, 1.0], // red
             [1.0, 1.0, 0.0, 1.0], // yellow
@@ -323,6 +323,7 @@ export default class BaseObject {
         ]
 
         let indices = [
+            // a, b, c, d, e, f
             0, 1, 5, 0, 5, 4,
             1, 2, 6, 1, 6, 5,
             2, 3, 7, 2, 7, 6,
@@ -364,23 +365,37 @@ export default class BaseObject {
         ]
 
         for (let i = 0; i < indices.length; i += 3) {
-            for (let j = 0; j < 3; j++) {
-                let [x1, y1, z1] = vertices[indices[i]];
-                let [x2, y2, z2] = vertices[indices[i + 1]];
-                let [x3, y3, z3] = vertices[indices[i + 2]];
+                let [x1, y1, z1] = baseVertices[indices[i]];
+                let [x2, y2, z2] = baseVertices[indices[i + 1]];
+                let [x3, y3, z3] = baseVertices[indices[i + 2]];
     
                 let point1 = new Point(x1, y1, z1);
                 let point2 = new Point(x2, y2, z2);
                 let point3 = new Point(x3, y3, z3);
     
-                let color1 = new Color(...colors[indices[j]]);
-                let color2 = new Color(...colors[indices[j + 1]]);
-                let color3 = new Color(...colors[indices[j + 2]]);
+                let color1 = new Color(...baseColors[4]);
+                let color2 = new Color(...baseColors[4]);
+                let color3 = new Color(...baseColors[4]);
     
                 this.vertices.push(point1, point2, point3);
                 this.colors.push(color1, color2, color3);
-            }
         }
+
+        for (let i = 0; i < this.vertices.length; i += 3) {
+            let point1 = this.vertices[i];
+            let point2 = this.vertices[i + 1];
+            let point3 = this.vertices[i + 2];
+    
+            let vector1 = mat4.substraction(point3, point2);
+            let vector2 = mat4.substraction(point1, point2);
+    
+            let cross = mat4.cross(vector1, vector2)
+            let normalize = mat4.normalize(cross);
+            let [nX, nY, nZ] = normalize
+            let normals = new Point(nX, nY, nZ)
+            this.normals.push(normals, normals, normals);
+        }
+
 
     }
 }
