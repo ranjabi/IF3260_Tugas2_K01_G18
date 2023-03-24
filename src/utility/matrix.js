@@ -112,9 +112,14 @@ let mat4 = {
         return result;
     },
 
-
-
-
+    // convert a given vector into a unit vector
+    normalize: function(vector) {
+        let magnitude = Math.sqrt(vector[0]*vector[0] + vector[1]*vector[1] + vector[2]*vector[2]);
+        vector[0] = vector[0] / magnitude;
+        vector[1] = vector[1] / magnitude;
+        vector[2] = vector[2] / magnitude;
+        return vector;
+    },
 
     xRotation: function(angleInRadian) {
         let cos = Math.cos(angleInRadian);

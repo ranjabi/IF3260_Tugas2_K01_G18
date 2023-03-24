@@ -9,25 +9,33 @@
     </head>
     <script id="vertex-shader" type="x-shader/x-vertex">
         attribute vec4 vPosition;
-        attribute vec4 vColor;
+        attribute vec3 vNormal;
 
-        uniform mat4 uMatrix;
+        uniform mat4 uWorld;
+        uniform mat4 uWorldViewProjection;
 
-        varying vec4 fColor;
+        varying vec3 fNormal;
 
         void main()
         {
-            gl_Position = uMatrix * vPosition;
-            fColor = vColor;
+            gl_Position = uWorldViewProjection * vPosition;
+            fNormal = mat3(uWorld) * vNormal;
         }
     </script>
     <script id="fragment-shader" type="x-shader/x-fragment">
         precision mediump float;
 
-        varying vec4 fColor;
+        varying vec3 fNormal;
+
+        uniform vec3 uReverseLightDirection;
+        uniform vec4 uColor;
+
         void main()
         {
-            gl_FragColor = fColor;
+            vec3 normal = normalize(fNormal);
+            float light = dot(normal, uReverseLightDirection);
+            gl_FragColor = uColor;
+            gl_FragColor.rgb *= light;
         }
     </script>
     <script type="module" src="./main.js"></script>
@@ -43,6 +51,11 @@
                         <option value="orthographic">orthographic</option>
                         <option value="oblique">oblique</option>
                     </select>
+                </div>
+                <div>
+                    <button id="save"> Save </button>
+                    <button id="load"> Load </button>
+                </div>
 
             </div>
         </div>
