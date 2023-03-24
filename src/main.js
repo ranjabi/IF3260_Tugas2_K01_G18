@@ -3,6 +3,16 @@ import { mat4 } from "./utility/matrix.js";
 import BaseObject from "./classes/object.js";
 import { radianToDegree, degreeToRadian } from "./utility/math.js";
 
+const saveButton = document.getElementById("save");
+saveButton.addEventListener("click", function () {
+
+});
+
+const loadButton = document.getElementById("load");
+loadButton.addEventListener("click", function() {
+
+});
+
 function main() {
     let canvas = document.getElementById("canvas");
     let gl = canvas.getContext("webgl");
@@ -30,6 +40,7 @@ function main() {
 
     let vertices = hollow_cube.getFlattenVertices();
     let colors = hollow_cube.getFlattenColor();
+    let normals = hollow_cube.getFlattenNormals();
 
     let state = {
         rotation: {
@@ -255,8 +266,12 @@ function main() {
     // gl.vertexAttribPointer(vertexColor, size, type, normalize, stride, offset);
     // gl.enableVertexAttribArray(vertexColor);
 
+    let normalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+
     let vertexNormal = gl.getAttribLocation(program, "vNormal");
-    gl.vertexAttribPointer(vertexNormal, size, type, normalize, stride, offset)
+    gl.vertexAttribPointer(vertexNormal, 3, type, normalize, stride, offset)
     gl.enableVertexAttribArray(vertexNormal);
 
     let worldViewProjectionLocation = gl.getUniformLocation(program, "uWorldViewProjection");
