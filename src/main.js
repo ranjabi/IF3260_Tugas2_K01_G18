@@ -408,11 +408,17 @@ function main() {
         matrix = mat4.zRotate(matrix, zAngle);
         matrix = mat4.scale(matrix, state.scale);
 
-        let worldMatrix = mat4.yRotation(angleRadian);
-        let worldViewProjectionMatrix = mat4.multiply(viewProjectionMatrix, worldMatrix);
-        
+
+        // let worldMatrix = mat4.xRotate(matrix, state.rotation.xAngle);
+        // worldMatrix = mat4.yRotate(matrix, state.rotation.yAngle);
+        // worldMatrix = mat4.zRotate(matrix, state.rotation.zAngle);
+
+        // let worldInverseMatrix = mat4.inverse(worldMatrix);
+        // let worldInverseTransposeMatrix = mat4.transpose(worldInverseMatrix);
+        // let worldViewProjectionMatrix = mat4.multiply(viewProjectionMatrix, worldMatrix);
+
         gl.uniformMatrix4fv(worldViewProjectionLocation, false, matrix);
-        gl.uniformMatrix4fv(worldLocation, false, worldMatrix);
+        gl.uniformMatrix4fv(worldLocation, false, matrix);
         gl.uniform4fv(colorLocation, new Float32Array([0.2, 1, 0.2, 1]));
         gl.uniform3fv(reverseLightDirectionLocation, mat4.normalize([0.5, 0.7, 1]));
 
