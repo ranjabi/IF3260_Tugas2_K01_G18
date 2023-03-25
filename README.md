@@ -11,7 +11,7 @@ Kelompok:
 ## Cara Menjalankan Program
 
 1. Clone Repository
-2. Double click pada index.html
+2. Buka index.html di visual studio code, lalu open with live server
 3. Ubah jenis hollow object
 4. Ubah jenis proyeksi
 5. Geser slider untuk melakukan transformasi (rotasi, translasi, scaling)
