@@ -381,10 +381,10 @@ export default class BaseObject {
                 this.colors.push(color1, color2, color3);
         }
 
-        for (let i = 0; i < this.vertices.length; i += 3) {
-            let point1 = this.vertices[i];
-            let point2 = this.vertices[i + 1];
-            let point3 = this.vertices[i + 2];
+        for (let i = 0; i < indices.length; i += 3) {
+            let point1 = baseVertices[indices[i]];
+            let point2 = baseVertices[indices[i + 1]];
+            let point3 = baseVertices[indices[i + 2]];
     
             let vector1 = mat4.substraction(point3, point2);
             let vector2 = mat4.substraction(point1, point2);
