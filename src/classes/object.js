@@ -415,4 +415,92 @@ export default class BaseObject {
 
     }
 
+    initTrianglePrism() {
+        let baseVertices = [
+            // outer top bottom 0
+            [0.0, 0.0, -0.5],
+            // outer left bottom
+            [-0.5, 0.0, 0.05],
+            // outer right bottom
+            [0.5, 0.0, 0.05],
+
+            // inner top bottom 3
+            [0.0, 0.0, -0.4],
+            // inner left bottom
+            [-0.35, 0.0, 0.0],
+            // inner right bottom
+            [0.35, 0.0, 0.0],
+
+
+            // outer top top 6
+            [0.0, 0.8, -0.5],
+            // outer left top
+            [-0.5, 0.8, 0.05],
+            // outer right top
+            [0.5, 0.8, 0.05],
+
+            // inner top top 9
+            [0.0, 0.8, -0.4],
+            // inner left top
+            [-0.35, 0.8, 0.0],
+            // inner right top
+            [0.35, 0.8, 0.0],
+        ]
+
+        let baseColors = [
+            [0.0, 0.0, 0.0, 1.0], // black
+            [1.0, 0.0, 0.0, 1.0], // red
+        ]
+
+        let indices = [
+            0, 1, 4, 0, 4, 3,
+            1, 2, 5, 1, 5, 4,
+            2, 0, 3, 2, 3, 5,
+
+            6, 9, 10, 6, 10, 7,
+            7, 10, 11, 7, 11, 8,
+            8, 11, 9, 8, 9, 6,
+
+            0, 6, 7, 0, 7, 1,
+            1, 7, 8, 1, 8, 2,
+            2, 8, 6, 2, 6, 0,
+
+            3, 4, 10, 3, 10, 9,
+            4, 5, 11, 4, 11, 10,
+            5, 3, 9, 5, 9, 11,
+
+
+        ]
+        for (let i = 0; i < indices.length; i += 3) {
+            let [x1, y1, z1] = baseVertices[indices[i]];
+            let [x2, y2, z2] = baseVertices[indices[i + 1]];
+            let [x3, y3, z3] = baseVertices[indices[i + 2]];
+
+            let point1 = new Point(x1, y1, z1);
+            let point2 = new Point(x2, y2, z2);
+            let point3 = new Point(x3, y3, z3);
+
+            let color1 = new Color(...baseColors[1]);
+            let color2 = new Color(...baseColors[1]);
+            let color3 = new Color(...baseColors[1]);
+            
+            this.vertices.push(point1, point2, point3);
+            this.colors.push(color1, color2, color3);
+    }
+
+        for (let i = 0; i < indices.length; i += 3) {
+            let point1 = baseVertices[indices[i]];
+            let point2 = baseVertices[indices[i + 1]];
+            let point3 = baseVertices[indices[i + 2]];
+    
+            let vector1 = mat4.substraction(point3, point2);
+            let vector2 = mat4.substraction(point1, point2);
+    
+            let cross = mat4.cross(vector1, vector2)
+            let normalize = mat4.normalize(cross);
+            let [nX, nY, nZ] = normalize
+            let normals = new Point(nX, nY, nZ)
+            this.normals.push(normals, normals, normals);
+        }
+    }
 }

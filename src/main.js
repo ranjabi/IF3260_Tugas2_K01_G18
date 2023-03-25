@@ -376,6 +376,8 @@ function main() {
             hollow_object.initCube();
         } else if (state.shapeType == "random") {
             hollow_object.initRandomHollow();
+        } else {
+            hollow_object.initTrianglePrism();
         }
 
         vertices = hollow_object.getFlattenVertices();
