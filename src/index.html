@@ -43,8 +43,14 @@
         <div class="wrapper">
             <canvas id="canvas" width="720" height="720"></canvas>
             <div id="properties">
-                    <input type="checkbox" id="animation" name="animation" value="false">
-                    <label for="animation">Animation</label><br>
+                <div>
+                    <p>Shape</p>
+                    <select id="shape-type">
+                        <option value="cube" selected>cube</option>
+                        <option value="random">random</option>
+                    </select>
+                </div> 
+                <div>
                     <p>Projection Type</p>
                     <select id="projection-type">
                         <option value="perspective" selected>perspective</option>
@@ -53,11 +59,25 @@
                     </select>
                 </div>
                 <div>
+                    <input type="checkbox" id="animation" name="animation" value="false">
+                    <label for="animation">Animation</label><br>
+                </div>
+                </div>
+                <div>
                     <button id="save"> Save </button>
                     <button id="load"> Load </button>
                 </div>
-
+                <div>
+                    <button id="manual">Manual</button>
+                </div>
             </div>
+            <div id="manual-modal" class="modal">
+                <div class="modal-content">
+                  <span class="close">&times;</span>
+                  <p>Some text in the Modal..</p>
+                </div>
+              
+              </div>
         </div>
     </body>
 </html>

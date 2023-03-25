@@ -34,13 +34,14 @@ function main() {
     gl.useProgram(program);
     gl.enable(gl.DEPTH_TEST);
 
-    // dummy object
-    let hollow_cube = new BaseObject();
-    hollow_cube.initCube();
+    var hollow_object = new BaseObject();
+    hollow_object.initCube();
+    var vertices = hollow_object.getFlattenVertices();
+    var colors = hollow_object.getFlattenColor();
+    var normals = hollow_object.getFlattenNormals();
+    
 
-    let vertices = hollow_cube.getFlattenVertices();
-    let colors = hollow_cube.getFlattenColor();
-    let normals = hollow_cube.getFlattenNormals();
+
 
     let state = {
         animation: {
@@ -68,7 +69,9 @@ function main() {
         runAnimation: false,
         cameraAngle: 0,
         cameraRadius: 0.8,
-        projectionType: "perspective"
+        projectionType: "perspective",
+        shapeType: "cube"
+
     }
 
     function computeModelMatrix() {
@@ -111,7 +114,7 @@ function main() {
     }
 
     /* SETUP ALL SLIDER */
-    let angleXSlider = setupSlider("#angleX", {
+    let angleXSlider = setupSlider("angleX", {
         name: "angle x",
         value: radianToDegree(state.rotation.xAngle),
         slideFunction: updateRotation("xAngle"),
@@ -119,7 +122,7 @@ function main() {
         min: 0,
     });
 
-    let angleYSlider = setupSlider("#angleY", {
+    let angleYSlider = setupSlider("angleY", {
         name: "angle y",
         value: radianToDegree(state.rotation.yAngle),
         slideFunction: updateRotation("yAngle"),
@@ -127,7 +130,7 @@ function main() {
         min: 0,
     });
 
-    let angleZSlider = setupSlider("#angleZ", {
+    let angleZSlider = setupSlider("angleZ", {
         name: "angle z",
         value: radianToDegree(state.rotation.zAngle),
         slideFunction: updateRotation("zAngle"),
@@ -135,7 +138,7 @@ function main() {
         min: 0,
     });
 
-    let translationX = setupSlider("#translationX", {
+    let translationX = setupSlider("translationX", {
         name: "translation X",
         value: state.translation.xOffset,
         slideFunction: updateTranslation("xOffset"),
@@ -143,7 +146,7 @@ function main() {
         min: -1
     });
 
-    let translationY = setupSlider("#translationY", {
+    let translationY = setupSlider("translationY", {
         name: "translation Y",
         value: state.translation.yOffset,
         slideFunction: updateTranslation("yOffset"),
@@ -151,7 +154,7 @@ function main() {
         min: -1
     });
 
-    let translationZ = setupSlider("#translationZ", {
+    let translationZ = setupSlider("translationZ", {
         name: "translation Z",
         value: state.translation.zOffset,
         slideFunction: updateTranslation("zOffset"),
@@ -159,7 +162,7 @@ function main() {
         min: -1
     });
 
-    let scaling = setupSlider("#scaling", {
+    let scaling = setupSlider("scaling", {
         name: "scaling",
         value: state.scale,
         slideFunction: updateScaling(),
@@ -167,7 +170,7 @@ function main() {
         min: 0.5
     });
 
-    let fov = setupSlider("#fov", {
+    let fov = setupSlider("fov", {
         name: "fov",
         value: state.perspectiveProjection.fov,
         max: 359,
@@ -175,7 +178,7 @@ function main() {
         slideFunction: updatePerspectiveProjection("fov")
     });
 
-    let zNear = setupSlider("#zNear", {
+    let zNear = setupSlider("zNear", {
         name: "zNear",
         value: state.perspectiveProjection.zNear,
         max: 1,
@@ -183,7 +186,7 @@ function main() {
         slideFunction: updatePerspectiveProjection("zNear")
     });
 
-    let zFar = setupSlider("#zFar", {
+    let zFar = setupSlider("zFar", {
         name: "zFar",
         value: state.perspectiveProjection.zFar,
         max: 2000,
@@ -191,7 +194,7 @@ function main() {
         slideFunction: updatePerspectiveProjection("zFar")
     });
 
-    let cameraAngle = setupSlider("#cameraAngle", {
+    let cameraAngle = setupSlider("cameraAngle", {
         name: "cameraAngle",
         value: state.cameraAngle,
         max: 360,
@@ -201,7 +204,7 @@ function main() {
         }
     });
 
-    let cameraRadius = setupSlider("#cameraRadius", {
+    let cameraRadius = setupSlider("cameraRadius", {
         name: "cameraRadius",
         value: state.cameraRadius,
         max: 2,
@@ -214,6 +217,10 @@ function main() {
     /* END OF SETUP ALL SLIDER */
 
     var projectionType = document.getElementById("projection-type");
+    var fovSlider = document.getElementById("fov");
+    var zNearSlider = document.getElementById("zNear");
+    var zFarSlider = document.getElementById("zFar");
+
     projectionType.addEventListener("change", function (event) {
         state.projectionType = event.target.value;
         if (state.projectionType == "oblique") {
@@ -244,6 +251,17 @@ function main() {
             state.cameraRadius = 0.8;
             cameraRadius.updateValue(state.cameraRadius);
         }
+
+        if (state.projectionType == "perspective") {
+            fovSlider.style.display = "block";
+            zNearSlider.style.display = "block";
+            zFarSlider.style.display = "block";
+        }
+        else {
+            fovSlider.style.display = "none";
+            zNearSlider.style.display = "none";
+            zFarSlider.style.display = "none";
+        }
     })
 
     let animationCheckbox = document.getElementById("animation");
@@ -255,49 +273,74 @@ function main() {
         }
     });
 
+
+
+
     let size = 4; // 4 components per iteration
     let type = gl.FLOAT; // the data is 32bit floats
     let normalize = false; // don't normalize the data
     let stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
     let offset = 0; // start at the beginning of the buffer
 
-    let vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-    let vertexPosition = gl.getAttribLocation(program, "vPosition");
-    gl.vertexAttribPointer(
-        vertexPosition,
-        size,
-        type,
-        normalize,
-        stride,
-        offset
-    );
-    gl.enableVertexAttribArray(vertexPosition);
-
-    // let colorBuffer = gl.createBuffer();
-    // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-
-    // let vertexColor = gl.getAttribLocation(program, "vColor");
-    // gl.vertexAttribPointer(vertexColor, size, type, normalize, stride, offset);
-    // gl.enableVertexAttribArray(vertexColor);
-
-    let normalBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-
-    let vertexNormal = gl.getAttribLocation(program, "vNormal");
-    gl.vertexAttribPointer(vertexNormal, 3, type, normalize, stride, offset)
-    gl.enableVertexAttribArray(vertexNormal);
+    initBuffers();
 
     let worldViewProjectionLocation = gl.getUniformLocation(program, "uWorldViewProjection");
     let worldLocation = gl.getUniformLocation(program, "uWorld");
     let colorLocation = gl.getUniformLocation(program, "uColor");
     var reverseLightDirectionLocation = gl.getUniformLocation(program, "uReverseLightDirection");
+    
+    var shapeType = document.getElementById("shape-type");
+    shapeType.addEventListener("change", function (event) {
+        state.shapeType = event.target.value;
+        hollow_object = new BaseObject();
+        if (state.shapeType == "cube") {
+            hollow_object.initCube();
+        } else if (state.shapeType == "random") {
+            hollow_object.initRandomHollow();
+        }
 
+        vertices = hollow_object.getFlattenVertices();
+        colors = hollow_object.getFlattenColor();
+        normals = hollow_object.getFlattenNormals();
+
+        initBuffers();
+    })
+
+    
     render();
+
+    function initBuffers() {
+        var vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    
+        let vertexPosition = gl.getAttribLocation(program, "vPosition");
+        gl.vertexAttribPointer(
+            vertexPosition,
+            size,
+            type,
+            normalize,
+            stride,
+            offset
+        );
+        gl.enableVertexAttribArray(vertexPosition);
+
+        // let colorBuffer = gl.createBuffer();
+        // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+
+        // let vertexColor = gl.getAttribLocation(program, "vColor");
+        // gl.vertexAttribPointer(vertexColor, size, type, normalize, stride, offset);
+        // gl.enableVertexAttribArray(vertexColor);
+    
+        var normalBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+    
+        let vertexNormal = gl.getAttribLocation(program, "vNormal");
+        gl.vertexAttribPointer(vertexNormal, 3, type, normalize, stride, offset)
+        gl.enableVertexAttribArray(vertexNormal);
+    }
 
     function render() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -362,6 +405,30 @@ function main() {
         gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
         requestAnimationFrame(render);
     }
+
+    var modal = document.getElementById("manual-modal");
+    var manualButton = document.getElementById("manual");
+
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the button, open the modal
+    manualButton.addEventListener("click", function() {
+        modal.style.display = "block";
+        console.log(modal)
+    })
+
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener("click", function() {
+        modal.style.display = "none";
+    })
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.addEventListener("click", function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    })
+
 }
 
 window.onload = main();
