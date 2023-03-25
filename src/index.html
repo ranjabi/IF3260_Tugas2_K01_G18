@@ -35,15 +35,17 @@
         <div class="wrapper">
             <canvas id="canvas" width="720" height="720"></canvas>
             <div id="properties">
+                <button id="reset-view">Reset default view</button>
+                <div>
                     <input type="checkbox" id="animation" name="animation" value="false">
                     <label for="animation">Animation</label><br>
-                    <p>Projection Type</p>
-                    <select id="projection-type">
-                        <option value="perspective" selected>perspective</option>
-                        <option value="orthographic">orthographic</option>
-                        <option value="oblique">oblique</option>
-                    </select>
-
+                </div>
+                <p>Projection Type</p>
+                <select id="projection-type">
+                    <option value="perspective" selected>perspective</option>
+                    <option value="orthographic">orthographic</option>
+                    <option value="oblique">oblique</option>
+                </select>
             </div>
         </div>
     </body>
