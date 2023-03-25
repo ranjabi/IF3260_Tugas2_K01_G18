@@ -180,6 +180,7 @@ function main() {
     /* SETUP ALL SLIDER */
     let angleXSlider = setupSlider("angleX", {
         name: "angle x",
+        group: "rotation",
         value: radianToDegree(state.rotation.xAngle),
         slideFunction: updateRotation("xAngle"),
         max: 360,
@@ -188,6 +189,7 @@ function main() {
 
     let angleYSlider = setupSlider("angleY", {
         name: "angle y",
+        group: "rotation",
         value: radianToDegree(state.rotation.yAngle),
         slideFunction: updateRotation("yAngle"),
         max: 360,
@@ -196,6 +198,7 @@ function main() {
 
     let angleZSlider = setupSlider("angleZ", {
         name: "angle z",
+        group: "rotation",
         value: radianToDegree(state.rotation.zAngle),
         slideFunction: updateRotation("zAngle"),
         max: 360,
@@ -204,6 +207,7 @@ function main() {
 
     let translationX = setupSlider("translationX", {
         name: "translation X",
+        group: "translation",
         value: state.translation.xOffset,
         slideFunction: updateTranslation("xOffset"),
         max: 1,
@@ -212,6 +216,7 @@ function main() {
 
     let translationY = setupSlider("translationY", {
         name: "translation Y",
+        group: "translation",
         value: state.translation.yOffset,
         slideFunction: updateTranslation("yOffset"),
         max: 1,
@@ -220,6 +225,7 @@ function main() {
 
     let translationZ = setupSlider("translationZ", {
         name: "translation Z",
+        group: "translation",
         value: state.translation.zOffset,
         slideFunction: updateTranslation("zOffset"),
         max: 1,
@@ -228,6 +234,7 @@ function main() {
 
     let overallScale = setupSlider("overallScale", {
         name: "scaling overall",
+        group: "scale",
         value: state.scaling.overall,
         slideFunction: updateScaling("overall"),
         max: 1.5,
@@ -236,6 +243,7 @@ function main() {
 
     let xScale = setupSlider("xScale", {
         name: "scaling X",
+        group: "scale",
         value: state.scaling.xScale,
         slideFunction: updateScaling("xScale"),
         max: 1.5,
@@ -244,6 +252,7 @@ function main() {
 
     let yScale = setupSlider("yScale", {
         name: "scaling Y",
+        group: "scale",
         value: state.scaling.yScale,
         slideFunction: updateScaling("yScale"),
         max: 1.5,
@@ -252,6 +261,7 @@ function main() {
 
     let zScale = setupSlider("zScale", {
         name: "scaling Z",
+        group: "scale",
         value: state.scaling.zScale,
         slideFunction: updateScaling("zScale"),
         max: 1.5,
@@ -261,6 +271,7 @@ function main() {
 
     let fov = setupSlider("fov", {
         name: "fov",
+        group: "perspective",
         value: state.perspectiveProjection.fov,
         max: 359,
         min: 1,
@@ -269,6 +280,7 @@ function main() {
 
     let zNear = setupSlider("zNear", {
         name: "zNear",
+        group: "perspective",
         value: state.perspectiveProjection.zNear,
         max: 1,
         min: 0,
@@ -277,6 +289,7 @@ function main() {
 
     let zFar = setupSlider("zFar", {
         name: "zFar",
+        group: "perspective",
         value: state.perspectiveProjection.zFar,
         max: 2000,
         min: 1,
@@ -285,6 +298,7 @@ function main() {
 
     let cameraAngle = setupSlider("cameraAngle", {
         name: "cameraAngle",
+        group: "camera",
         value: state.cameraAngle,
         max: 360,
         min: 0,
@@ -295,6 +309,7 @@ function main() {
 
     let cameraRadius = setupSlider("cameraRadius", {
         name: "cameraRadius",
+        group: "camera",
         value: state.cameraRadius,
         max: 2,
         min: -2,
