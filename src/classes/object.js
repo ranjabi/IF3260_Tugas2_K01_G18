@@ -336,6 +336,10 @@ export default class BaseObject {
             9, 10, 14, 9, 14, 13,
             10, 11, 15, 10, 15, 14,
             11, 8, 12, 11, 12, 15,
+            4, 5, 9, 4, 9, 8,
+            5, 6, 10, 5, 10, 9,
+            6, 7, 11, 6, 11, 10,
+            7, 4, 8, 7, 8, 11,
 
             16, 17, 21, 16, 21, 20,
             17, 18, 22, 17, 22, 21,
@@ -349,6 +353,10 @@ export default class BaseObject {
             25, 26, 30, 25, 30, 29,
             26, 27, 31, 26, 31, 30,
             27, 24, 28, 27, 28, 31,
+            20, 21, 29, 20, 29, 28,
+            21, 22, 30, 21, 30, 29,
+            22, 23, 31, 22, 31, 30,
+            23, 20, 28, 23, 28, 31,
 
             32, 33, 37, 32, 37, 36,
             33, 34, 38, 33, 38, 37,
@@ -362,6 +370,10 @@ export default class BaseObject {
             41, 42, 46, 41, 46, 45,
             42, 43, 47, 42, 47, 46,
             43, 40, 44, 43, 44, 47,
+            36, 44, 45, 36, 45, 37,
+            37, 45, 46, 37, 46, 38,
+            38, 46, 47, 38, 47, 39,
+            39, 47, 44, 39, 44, 36,
         ]
 
         for (let i = 0; i < indices.length; i += 3) {
@@ -376,7 +388,7 @@ export default class BaseObject {
                 let color1 = new Color(...baseColors[4]);
                 let color2 = new Color(...baseColors[4]);
                 let color3 = new Color(...baseColors[4]);
-    
+                
                 this.vertices.push(point1, point2, point3);
                 this.colors.push(color1, color2, color3);
         }
