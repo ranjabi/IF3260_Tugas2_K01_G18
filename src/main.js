@@ -42,11 +42,16 @@ function main() {
     let colors = hollow_cube.getFlattenColor();
     let normals = hollow_cube.getFlattenNormals();
 
-    let state = {
+    const initialState = {
+        animation: {
+            xAngle: null, 
+            yAngle: null, 
+            zAngle: null
+        },
         rotation: {
-            xAngle: degreeToRadian(30), 
-            yAngle: degreeToRadian(30), 
-            zAngle: degreeToRadian(0)
+            xAngle: degreeToRadian(0), 
+            yAngle: degreeToRadian(300), 
+            zAngle: degreeToRadian(30)
         },
         translation: {
             xOffset: 0,
@@ -60,9 +65,43 @@ function main() {
             zNear: 0.1,
             zFar: 2000,
         },
+        runAnimation: false,
         cameraAngle: 0,
         cameraRadius: 0.8,
         projectionType: "perspective"
+    };
+
+    let state = JSON.parse(JSON.stringify(initialState));
+
+    function setupInitialObjectTransformation() {
+        if (state.projectionType == "oblique") {
+            state.rotation.xAngle = degreeToRadian(180);
+            state.rotation.yAngle = degreeToRadian(0);
+            state.rotation.zAngle = degreeToRadian(0);
+
+            state.cameraRadius = 0;
+        } else if (state.projectionType == "orthographic") {
+            state.rotation.xAngle = degreeToRadian(30);
+            state.rotation.yAngle = degreeToRadian(30);
+            state.rotation.zAngle = degreeToRadian(0);
+
+            state.cameraRadius = 0.5;
+        } else if (state.projectionType == "perspective") {
+            state.rotation.xAngle = degreeToRadian(30);
+            state.rotation.yAngle = degreeToRadian(30);
+            state.rotation.zAngle = degreeToRadian(0);
+            
+            state.cameraRadius = 0.8;
+        }
+        state.animation.xAngle = null
+        state.animation.yAngle = null
+        state.animation.zAngle = null
+
+        angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
+        angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
+        angleZSlider.updateValue(radianToDegree(state.rotation.zAngle));
+
+        cameraRadius.updateValue(state.cameraRadius);
     }
 
     function computeModelMatrix() {
@@ -210,31 +249,26 @@ function main() {
     var projectionType = document.getElementById("projection-type");
     projectionType.addEventListener("change", function (event) {
         state.projectionType = event.target.value;
-        if (state.projectionType == "oblique") {
-            state.rotation.xAngle = degreeToRadian(0);
-            state.rotation.yAngle = degreeToRadian(0);
-            angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
-            angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
+        setupInitialObjectTransformation()
+    })
 
-            state.cameraRadius = 0;
-            cameraRadius.updateValue(state.cameraRadius);
-        } else if (state.projectionType == "orthographic") {
-            state.rotation.xAngle = degreeToRadian(30);
-            state.rotation.yAngle = degreeToRadian(30);
-            angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
-            angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
-
-            state.cameraRadius = 0.5;
-            cameraRadius.updateValue(state.cameraRadius);
-        } else if (state.projectionType == "perspective") {
-            state.rotation.xAngle = degreeToRadian(30);
-            state.rotation.yAngle = degreeToRadian(30);
-            angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
-            angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
-
-            state.cameraRadius = 0.8;
-            cameraRadius.updateValue(state.cameraRadius);
+    let animationCheckbox = document.getElementById("animation");
+    animationCheckbox.addEventListener("change", function (event) {
+        if (animationCheckbox.checked) {
+            state.runAnimation = true;
+        } else {
+            state.runAnimation = false;
         }
+    });
+
+    let resetView = document.getElementById("reset-view");
+    resetView.addEventListener("click", function (event) {
+        projectionType = JSON.parse(JSON.stringify(state.projectionType))
+        state = JSON.parse(JSON.stringify(initialState))
+        state.projectionType = projectionType
+        setupInitialObjectTransformation()
+        animationCheckbox.checked = false;
+
     })
 
     let size = 4; // 4 components per iteration
@@ -295,9 +329,42 @@ function main() {
         matrix = viewProjectionMatrix
 
         matrix = mat4.translate(matrix, state.translation.xOffset, state.translation.yOffset, state.translation.zOffset);
-        matrix = mat4.xRotate(matrix, state.rotation.xAngle);
-        matrix = mat4.yRotate(matrix, state.rotation.yAngle);
-        matrix = mat4.zRotate(matrix, state.rotation.zAngle);
+
+        let xAngle = state.rotation.xAngle
+        let yAngle = state.rotation.yAngle
+        let zAngle = state.rotation.zAngle
+
+        if (state.animation.xAngle === null) {
+            state.animation.xAngle = JSON.parse(JSON.stringify(state.rotation.xAngle))
+        }
+        if (state.animation.yAngle === null) {
+            state.animation.yAngle = JSON.parse(JSON.stringify(state.rotation.yAngle))
+        }
+        if (state.animation.zAngle === null) {
+            state.animation.zAngle = JSON.parse(JSON.stringify(state.rotation.zAngle))
+        }
+
+        if (state.runAnimation) {
+            xAngle = degreeToRadian(radianToDegree(state.rotation.xAngle += 0.01))
+            yAngle = degreeToRadian(radianToDegree(state.rotation.yAngle += 0.01))
+            zAngle = degreeToRadian(radianToDegree(state.rotation.zAngle += 0.01))
+        } else {
+            state.rotation.xAngle = state.animation.xAngle
+            xAngle = state.rotation.xAngle
+            state.animation.xAngle = null
+
+            state.rotation.yAngle = state.animation.yAngle
+            yAngle = state.rotation.yAngle
+            state.animation.yAngle = null
+
+            state.rotation.zAngle = state.animation.zAngle
+            zAngle = state.rotation.zAngle
+            state.animation.zAngle = null
+        }
+
+        matrix = mat4.xRotate(matrix, xAngle);
+        matrix = mat4.yRotate(matrix, yAngle);
+        matrix = mat4.zRotate(matrix, zAngle);
         matrix = mat4.scale(matrix, state.scale);
 
 
