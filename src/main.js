@@ -84,6 +84,7 @@ function main() {
         fov.updateValue(state.perspectiveProjection.fov)
         zNear.updateValue(state.perspectiveProjection.zNear)
         zFar.updateValue(state.perspectiveProjection.zFar)
+        cameraAngle.updateValue(state.cameraAngle)
     }
 
     function setupInitialObjectTransformation() {
