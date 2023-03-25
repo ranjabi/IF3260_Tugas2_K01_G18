@@ -54,6 +54,10 @@
                     </select>
                 </div> 
                 <div>
+                    <input type="checkbox" id="animation" name="animation" value="false">
+                    <label for="animation">Animation</label><br>
+                </div>
+                <div>
                     <p>Projection Type</p>
                     <select id="projection-type">
                         <option value="perspective" selected>perspective</option>
@@ -61,21 +65,19 @@
                         <option value="oblique">oblique</option>
                     </select>
                 </div>
-                <div>
-                    <input type="checkbox" id="animation" name="animation" value="false">
-                    <label for="animation">Animation</label><br>
+                <div clas="btn-group">
+                    <div>
+                        <button id="save"> Save </button>
+                        <input type="file" id="load"></input>
+                    </div>
+                    <div>
+                        <button id="reset-view">Reset default view</button>
+                    </div>
+                    <div>
+                        <button id="manual">Manual</button>
+                    </div>
                 </div>
-                </div>
-                <div>
-                    <button id="save"> Save </button>
-                    <button id="load"> Load </button>
-                </div>
-                <div>
-                    <button id="reset-view">Reset default view</button>
-                </div>
-                <div>
-                    <button id="manual">Manual</button>
-                </div>
+            </div>
             </div>
             <div id="manual-modal" class="modal">
                 <div class="modal-content">
@@ -151,8 +153,7 @@
                             </pre>
                     </ul>
                 </div>
-              
-              </div>
+            </div>
         </div>
     </body>
 </html>

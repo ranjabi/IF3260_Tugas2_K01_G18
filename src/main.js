@@ -3,16 +3,6 @@ import { mat4 } from "./utility/matrix.js";
 import BaseObject from "./classes/object.js";
 import { radianToDegree, degreeToRadian } from "./utility/math.js";
 
-const saveButton = document.getElementById("save");
-saveButton.addEventListener("click", function () {
-
-});
-
-const loadButton = document.getElementById("load");
-loadButton.addEventListener("click", function() {
-
-});
-
 function main() {
     let canvas = document.getElementById("canvas");
     let gl = canvas.getContext("webgl");
@@ -120,11 +110,15 @@ function main() {
             fovSlider.style.display = "block";
             zNearSlider.style.display = "block";
             zFarSlider.style.display = "block";
+
+            fovSlider.parentElement.style.border = "1px solid black"
         }
         else {
             fovSlider.style.display = "none";
             zNearSlider.style.display = "none";
             zFarSlider.style.display = "none";
+
+            fovSlider.parentElement.style.border = "none"
         }
         
         state.animation.xAngle = null
@@ -180,6 +174,7 @@ function main() {
     /* SETUP ALL SLIDER */
     let angleXSlider = setupSlider("angleX", {
         name: "angle x",
+        group: "rotation",
         value: radianToDegree(state.rotation.xAngle),
         slideFunction: updateRotation("xAngle"),
         max: 360,
@@ -188,6 +183,7 @@ function main() {
 
     let angleYSlider = setupSlider("angleY", {
         name: "angle y",
+        group: "rotation",
         value: radianToDegree(state.rotation.yAngle),
         slideFunction: updateRotation("yAngle"),
         max: 360,
@@ -196,6 +192,7 @@ function main() {
 
     let angleZSlider = setupSlider("angleZ", {
         name: "angle z",
+        group: "rotation",
         value: radianToDegree(state.rotation.zAngle),
         slideFunction: updateRotation("zAngle"),
         max: 360,
@@ -204,6 +201,7 @@ function main() {
 
     let translationX = setupSlider("translationX", {
         name: "translation X",
+        group: "translation",
         value: state.translation.xOffset,
         slideFunction: updateTranslation("xOffset"),
         max: 1,
@@ -212,6 +210,7 @@ function main() {
 
     let translationY = setupSlider("translationY", {
         name: "translation Y",
+        group: "translation",
         value: state.translation.yOffset,
         slideFunction: updateTranslation("yOffset"),
         max: 1,
@@ -220,6 +219,7 @@ function main() {
 
     let translationZ = setupSlider("translationZ", {
         name: "translation Z",
+        group: "translation",
         value: state.translation.zOffset,
         slideFunction: updateTranslation("zOffset"),
         max: 1,
@@ -228,6 +228,7 @@ function main() {
 
     let overallScale = setupSlider("overallScale", {
         name: "scaling overall",
+        group: "scale",
         value: state.scaling.overall,
         slideFunction: updateScaling("overall"),
         max: 1.5,
@@ -236,6 +237,7 @@ function main() {
 
     let xScale = setupSlider("xScale", {
         name: "scaling X",
+        group: "scale",
         value: state.scaling.xScale,
         slideFunction: updateScaling("xScale"),
         max: 1.5,
@@ -244,6 +246,7 @@ function main() {
 
     let yScale = setupSlider("yScale", {
         name: "scaling Y",
+        group: "scale",
         value: state.scaling.yScale,
         slideFunction: updateScaling("yScale"),
         max: 1.5,
@@ -252,6 +255,7 @@ function main() {
 
     let zScale = setupSlider("zScale", {
         name: "scaling Z",
+        group: "scale",
         value: state.scaling.zScale,
         slideFunction: updateScaling("zScale"),
         max: 1.5,
@@ -261,6 +265,7 @@ function main() {
 
     let fov = setupSlider("fov", {
         name: "fov",
+        group: "perspective",
         value: state.perspectiveProjection.fov,
         max: 359,
         min: 1,
@@ -269,6 +274,7 @@ function main() {
 
     let zNear = setupSlider("zNear", {
         name: "zNear",
+        group: "perspective",
         value: state.perspectiveProjection.zNear,
         max: 1,
         min: 0,
@@ -277,6 +283,7 @@ function main() {
 
     let zFar = setupSlider("zFar", {
         name: "zFar",
+        group: "perspective",
         value: state.perspectiveProjection.zFar,
         max: 2000,
         min: 1,
@@ -285,6 +292,7 @@ function main() {
 
     let cameraAngle = setupSlider("cameraAngle", {
         name: "cameraAngle",
+        group: "camera",
         value: state.cameraAngle,
         max: 360,
         min: 0,
@@ -295,6 +303,7 @@ function main() {
 
     let cameraRadius = setupSlider("cameraRadius", {
         name: "cameraRadius",
+        group: "camera",
         value: state.cameraRadius,
         max: 2,
         min: -2,
@@ -491,6 +500,173 @@ function main() {
             modal.style.display = "none";
         }
     })
+
+    let savedFile = null;
+    const saveButton = document.getElementById("save");
+    saveButton.addEventListener("click", function () {
+        let file = save();
+        let link = document.createElement("a");
+        link.setAttribute("download", "save.json");
+        link.href = file;
+        document.body.appendChild(link);
+        link.click();
+    });
+
+    function save() {
+        let saveObject = {
+            positions: [],
+            colors: [],
+            normals: [],
+            projectionType: [],
+            angleX: [],
+            angleY: [],
+            angleZ: [],
+            translationX: [],
+            translationY: [],
+            translationZ: [],
+            scalingOverall: [],
+            scalingX: [],
+            scalingY: [],
+            scalingZ: [],
+            fov: [],
+            zNear: [],
+            zFar: [],
+            cameraAngle: [],
+            cameraRadius: [],
+            shapeType: [],
+        };
+
+        saveObject.positions.push(vertices);
+        saveObject.colors.push(colors);
+        saveObject.normals.push(normals);
+        saveObject.projectionType.push(state.projectionType);
+        saveObject.angleX.push(state.rotation.xAngle);
+        saveObject.angleY.push(state.rotation.yAngle);
+        saveObject.angleZ.push(state.rotation.zAngle);
+        saveObject.translationX.push(state.translation.xOffset);
+        saveObject.translationY.push(state.translation.yOffset);
+        saveObject.translationZ.push(state.translation.zOffset);
+        saveObject.scalingOverall.push(state.scaling.overall);
+        saveObject.scalingX.push(state.scaling.xScale);
+        saveObject.scalingY.push(state.scaling.yScale);
+        saveObject.scalingZ.push(state.scaling.zScale);
+        saveObject.fov.push(state.perspectiveProjection.fov);
+        saveObject.zNear.push(state.perspectiveProjection.zNear);
+        saveObject.zFar.push(state.perspectiveProjection.zFar);
+        saveObject.cameraAngle.push(state.cameraAngle);
+        saveObject.cameraRadius.push(state.cameraRadius);
+        saveObject.shapeType.push(state.shapeType);
+
+        let jsonFile = JSON.stringify(saveObject);
+        let data = new Blob([jsonFile], { type: "application/json" });
+    
+        if (savedFile !== null) {
+        window.URL.revokeObjectURL(savedFile);
+        }
+    
+        savedFile = window.URL.createObjectURL(data);
+        return savedFile;
+    }
+
+    const loadButton = document.getElementById("load");
+    loadButton.addEventListener("input", function(e) {
+        load(e.target.files[0]);
+    });
+
+    function load(file) {
+        let reader = new FileReader();
+        reader.readAsText(file);
+        reader.addEventListener("load", function (e) {
+          loadModel(JSON.parse(reader.result));
+        });
+    }
+
+    function loadModel(loadedModel) {
+        let keys = Object.keys(loadedModel);
+        for (let key of keys) {
+          for (let item of loadedModel[key]) {
+            if (key === "positions") {
+                vertices = item;
+            } 
+            else if (key === "colors") {
+                colors = item;
+            }
+            else if (key === "normals") {
+                normals = item;
+            }
+            else if (key === "projectionType") {
+                projectionType.value = item;
+                state.projectionType = item;
+            }
+            else if (key === "angleX") {
+                angleXSlider.updateValue(radianToDegree(item));
+                state.rotation.xAngle = item;
+            }
+            else if (key === "angleY") {
+                angleYSlider.updateValue(radianToDegree(item));
+                state.rotation.yAngle = item;
+            }
+            else if (key === "angleZ") {
+                angleZSlider.updateValue(radianToDegree(item));
+                state.rotation.zAngle = item;
+            }
+            else if (key === "translationX") {
+                translationX.updateValue(item);
+                state.translation.xOffset = item;
+            }
+            else if (key === "translationY") {
+                translationY.updateValue(item);
+                state.translation.yOffset = item;
+            } 
+            else if (key === "translationZ") {
+                translationZ.updateValue(item);
+                state.translation.zOffset = item;
+            }
+            else if (key === "scalingOverall") {
+                overallScale.updateValue(item);
+                state.scaling.overall = item;
+            }
+            else if (key === "scalingX") {
+                xScale.updateValue(item);
+                state.scaling.xScale = item;
+            }
+            else if (key === "scalingY") {
+                yScale.updateValue(item);
+                state.scaling.yScale = item;
+            }
+            else if (key === "scalingZ") {
+                zScale.updateValue(item);
+                state.scaling.zScale = item;
+            }
+            else if (key === "fov") {
+                fov.updateValue(item);
+                state.perspectiveProjection.fov = item;
+            }
+            else if (key === "zNear") {
+                zNear.updateValue(item);
+                state.perspectiveProjection.zNear = item;
+            }
+            else if (key === "zFar") {
+                zFar.updateValue(item);
+                state.perspectiveProjection.zFar = item;
+            }
+            else if (key === "cameraAngle") {
+                cameraAngle.updateValue(item);
+                state.cameraAngle = item;
+            }
+            else if (key === "cameraRadius") {
+                cameraRadius.updateValue(item);
+                state.cameraRadius = item;
+            }
+            else if (key === "shapeType") {
+                var shapeType = document.getElementById("shape-type");
+                shapeType.value = item;
+            }
+          }
+        }
+        initBuffers();
+
+    }
 
 }
 

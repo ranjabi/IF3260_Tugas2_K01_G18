@@ -46,11 +46,22 @@ function createProgram(gl, vertexShader, fragmentShader) {
 
 function setupSlider(selector, options) {
     let parent = document.getElementById(selector);
+    let group = options.group
 
     if (!parent) {
         let attr = document.createElement("div");
         attr.setAttribute("id", selector);
-        document.querySelector("#properties").appendChild(attr);
+
+        let groupElmt = document.getElementById(group)
+
+        if (!groupElmt) {
+            groupElmt = document.createElement("div");
+            groupElmt.setAttribute("id", group);
+            groupElmt.setAttribute("class", "group-wrapper");
+            document.querySelector("#properties").appendChild(groupElmt);
+        }
+
+        document.querySelector(`#${group}`).appendChild(attr);
 
         parent = document.getElementById(selector);
     }

@@ -12,6 +12,19 @@
     align-items: center;
 }
 
+#properties {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+.group-wrapper {
+    border: 1px solid black;
+    padding: 8px;
+    border-radius: 12px;;
+}
+
 canvas {
     background-color: white;
 }
