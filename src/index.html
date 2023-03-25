@@ -32,13 +32,16 @@
         varying vec4 fColor;
 
         uniform vec3 uReverseLightDirection;
+        uniform float isShadingOn;
 
         void main()
         {
             vec3 normal = normalize(fNormal);
             float light = dot(normal, uReverseLightDirection);
             gl_FragColor = fColor;
-            gl_FragColor.rgb *= light;
+            if (isShadingOn > 0.0) {
+                gl_FragColor.rgb *= light;
+            }
         }
     </script>
     <script type="module" src="./main.js"></script>
@@ -56,6 +59,10 @@
                 <div>
                     <input type="checkbox" id="animation" name="animation" value="false">
                     <label for="animation">Animation</label><br>
+                </div>
+                <div>
+                    <input type="checkbox" id="shading" name="shading" value="false">
+                    <label for="shading">Shading</label><br>
                 </div>
                 <div>
                     <p>Projection Type</p>

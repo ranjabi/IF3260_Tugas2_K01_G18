@@ -333,6 +333,16 @@ function main() {
         }
     });
 
+    let shadingCheckbox = document.getElementById("shading");
+    shadingCheckbox.addEventListener("change", function() {
+        let isShadingOnLocation = gl.getUniformLocation(program, "isShadingOn");
+        if (shadingCheckbox.checked) {
+            gl.uniform1f(isShadingOnLocation, [1]);
+        } else {
+            gl.uniform1f(isShadingOnLocation, [0]);
+        }
+    })
+
     let resetView = document.getElementById("reset-view");
     resetView.addEventListener("click", function (event) {
         projectionType = JSON.parse(JSON.stringify(state.projectionType))
