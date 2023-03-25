@@ -167,11 +167,11 @@ let mat4 = {
         ];
     },
 
-    scaling: function(scale) {
+    scaling: function(xScale, yScale, zScale) {
         return [
-            scale, 0, 0, 0,
-            0, scale, 0, 0,
-            0, 0, scale, 0,
+            xScale, 0, 0, 0,
+            0, yScale, 0, 0,
+            0, 0, zScale, 0,
             0, 0, 0, 1,
         ];
     },
@@ -223,8 +223,8 @@ let mat4 = {
         return mat4.multiply(m, mat4.translation(xOffset, yOffset, zOffset));
     },
 
-    scale: function(m, scale) {
-        return mat4.multiply(m, mat4.scaling(scale));
+    scale: function(m, xScale, yScale, zScale) {
+        return mat4.multiply(m, mat4.scaling(xScale, yScale, zScale));
     },
 
     cross(a, b) {

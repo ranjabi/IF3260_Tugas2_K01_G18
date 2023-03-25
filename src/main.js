@@ -59,7 +59,12 @@ function main() {
             yOffset: 0,
             zOffset: 0,
         },
-        scale: 1,
+        scaling: {
+            overall: 1,
+            xScale: 1,
+            yScale: 1,
+            zScale: 1,
+        },
         perspectiveProjection: {
             fov: 150,
             aspect: gl.canvas.clientWidth / gl.canvas.clientHeight,
@@ -80,7 +85,10 @@ function main() {
         translationX.updateValue(state.translation.xOffset)
         translationY.updateValue(state.translation.yOffset)
         translationZ.updateValue(state.translation.zOffset)
-        scaling.updateValue(state.scale)
+        overallScale.updateValue(state.scaling.overall)
+        xScale.updateValue(state.scaling.xScale)
+        yScale.updateValue(state.scaling.yScale)
+        zScale.updateValue(state.scaling.zScale)
         fov.updateValue(state.perspectiveProjection.fov)
         zNear.updateValue(state.perspectiveProjection.zNear)
         zFar.updateValue(state.perspectiveProjection.zFar)
@@ -157,9 +165,9 @@ function main() {
         };
     }
 
-    function updateScaling() {
+    function updateScaling(axis) {
         return function (event, newState) {
-            state.scale = newState.value;
+            state.scaling[axis] = newState.value;
         };
     }
 
@@ -218,13 +226,38 @@ function main() {
         min: -1
     });
 
-    let scaling = setupSlider("scaling", {
-        name: "scaling",
-        value: state.scale,
-        slideFunction: updateScaling(),
+    let overallScale = setupSlider("overallScale", {
+        name: "scaling overall",
+        value: state.scaling.overall,
+        slideFunction: updateScaling("overall"),
         max: 1.5,
         min: 0.5
     });
+
+    let xScale = setupSlider("xScale", {
+        name: "scaling X",
+        value: state.scaling.xScale,
+        slideFunction: updateScaling("xScale"),
+        max: 1.5,
+        min: 0.5
+    });
+
+    let yScale = setupSlider("yScale", {
+        name: "scaling Y",
+        value: state.scaling.yScale,
+        slideFunction: updateScaling("yScale"),
+        max: 1.5,
+        min: 0.5
+    });
+
+    let zScale = setupSlider("zScale", {
+        name: "scaling Z",
+        value: state.scaling.zScale,
+        slideFunction: updateScaling("zScale"),
+        max: 1.5,
+        min: 0.5
+    });
+
 
     let fov = setupSlider("fov", {
         name: "fov",
@@ -417,7 +450,8 @@ function main() {
         matrix = mat4.xRotate(matrix, xAngle);
         matrix = mat4.yRotate(matrix, yAngle);
         matrix = mat4.zRotate(matrix, zAngle);
-        matrix = mat4.scale(matrix, state.scale);
+        matrix = mat4.scale(matrix, state.scaling.overall, state.scaling.overall, state.scaling.overall);
+        matrix = mat4.scale(matrix, state.scaling.xScale, state.scaling.yScale, state.scaling.zScale);
 
 
         // let worldMatrix = mat4.xRotate(matrix, state.rotation.xAngle);
