@@ -76,6 +76,16 @@ function main() {
 
     let state = JSON.parse(JSON.stringify(initialState));
 
+    function resetSliderUIValue() {
+        translationX.updateValue(state.translation.xOffset)
+        translationY.updateValue(state.translation.yOffset)
+        translationZ.updateValue(state.translation.zOffset)
+        scaling.updateValue(state.scale)
+        fov.updateValue(state.perspectiveProjection.fov)
+        zNear.updateValue(state.perspectiveProjection.zNear)
+        zFar.updateValue(state.perspectiveProjection.zFar)
+    }
+
     function setupInitialObjectTransformation() {
         if (state.projectionType == "oblique") {
             state.rotation.xAngle = degreeToRadian(180);
@@ -286,8 +296,8 @@ function main() {
         state = JSON.parse(JSON.stringify(initialState))
         state.projectionType = projectionType
         setupInitialObjectTransformation()
+        resetSliderUIValue()
         animationCheckbox.checked = false;
-
     })
 
     let size = 4; // 4 components per iteration
