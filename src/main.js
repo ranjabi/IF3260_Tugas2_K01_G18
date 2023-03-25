@@ -3,6 +3,16 @@ import { mat4 } from "./utility/matrix.js";
 import BaseObject from "./classes/object.js";
 import { radianToDegree, degreeToRadian } from "./utility/math.js";
 
+const saveButton = document.getElementById("save");
+saveButton.addEventListener("click", function () {
+
+});
+
+const loadButton = document.getElementById("load");
+loadButton.addEventListener("click", function() {
+
+});
+
 function main() {
     let canvas = document.getElementById("canvas");
     let gl = canvas.getContext("webgl");
@@ -30,6 +40,7 @@ function main() {
 
     let vertices = hollow_cube.getFlattenVertices();
     let colors = hollow_cube.getFlattenColor();
+    let normals = hollow_cube.getFlattenNormals();
 
     const initialState = {
         animation: {
@@ -105,10 +116,11 @@ function main() {
         return matrix;
     }
 
+    var angleRadian
     function updateRotation(angle) {
         return function (event, newState) {
             let degree = newState.value
-            var angleRadian = (degree * Math.PI) / 180;
+            angleRadian = (degree * Math.PI) / 180;
             state.rotation[angle] = angleRadian;
         };
     }
@@ -280,15 +292,26 @@ function main() {
     );
     gl.enableVertexAttribArray(vertexPosition);
 
-    let colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    // let colorBuffer = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
-    let vertexColor = gl.getAttribLocation(program, "vColor");
-    gl.vertexAttribPointer(vertexColor, size, type, normalize, stride, offset);
-    gl.enableVertexAttribArray(vertexColor);
+    // let vertexColor = gl.getAttribLocation(program, "vColor");
+    // gl.vertexAttribPointer(vertexColor, size, type, normalize, stride, offset);
+    // gl.enableVertexAttribArray(vertexColor);
 
-    let matrixLocation = gl.getUniformLocation(program, "uMatrix");
+    let normalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+
+    let vertexNormal = gl.getAttribLocation(program, "vNormal");
+    gl.vertexAttribPointer(vertexNormal, 3, type, normalize, stride, offset)
+    gl.enableVertexAttribArray(vertexNormal);
+
+    let worldViewProjectionLocation = gl.getUniformLocation(program, "uWorldViewProjection");
+    let worldLocation = gl.getUniformLocation(program, "uWorld");
+    let colorLocation = gl.getUniformLocation(program, "uColor");
+    var reverseLightDirectionLocation = gl.getUniformLocation(program, "uReverseLightDirection");
 
     render();
 
@@ -301,7 +324,7 @@ function main() {
         let cameraMatrix = mat4.yRotation(cameraAngleInRadians)
         cameraMatrix = mat4.translate(cameraMatrix, 0, 0, state.cameraRadius);
         let viewMatrix = mat4.inverse(cameraMatrix);
-        let viewProjectionMatrix = mat4.multiply(matrix, viewMatrix)
+        let viewProjectionMatrix = mat4.multiply(matrix, viewMatrix);
 
         matrix = viewProjectionMatrix
 
@@ -344,7 +367,19 @@ function main() {
         matrix = mat4.zRotate(matrix, zAngle);
         matrix = mat4.scale(matrix, state.scale);
 
-        gl.uniformMatrix4fv(matrixLocation, false, matrix);
+
+        // let worldMatrix = mat4.xRotate(matrix, state.rotation.xAngle);
+        // worldMatrix = mat4.yRotate(matrix, state.rotation.yAngle);
+        // worldMatrix = mat4.zRotate(matrix, state.rotation.zAngle);
+
+        // let worldInverseMatrix = mat4.inverse(worldMatrix);
+        // let worldInverseTransposeMatrix = mat4.transpose(worldInverseMatrix);
+        // let worldViewProjectionMatrix = mat4.multiply(viewProjectionMatrix, worldMatrix);
+
+        gl.uniformMatrix4fv(worldViewProjectionLocation, false, matrix);
+        gl.uniformMatrix4fv(worldLocation, false, matrix);
+        gl.uniform4fv(colorLocation, new Float32Array([0.2, 1, 0.2, 1]));
+        gl.uniform3fv(reverseLightDirectionLocation, mat4.normalize([0.5, 0.7, 1]));
 
         gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
         requestAnimationFrame(render);
