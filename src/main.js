@@ -43,7 +43,7 @@ function main() {
 
 
 
-    let state = {
+    const initialState = {
         animation: {
             xAngle: null, 
             yAngle: null, 
@@ -72,6 +72,39 @@ function main() {
         projectionType: "perspective",
         shapeType: "cube"
 
+    };
+
+    let state = JSON.parse(JSON.stringify(initialState));
+
+    function setupInitialObjectTransformation() {
+        if (state.projectionType == "oblique") {
+            state.rotation.xAngle = degreeToRadian(180);
+            state.rotation.yAngle = degreeToRadian(0);
+            state.rotation.zAngle = degreeToRadian(0);
+
+            state.cameraRadius = 0;
+        } else if (state.projectionType == "orthographic") {
+            state.rotation.xAngle = degreeToRadian(30);
+            state.rotation.yAngle = degreeToRadian(30);
+            state.rotation.zAngle = degreeToRadian(0);
+
+            state.cameraRadius = 0.5;
+        } else if (state.projectionType == "perspective") {
+            state.rotation.xAngle = degreeToRadian(30);
+            state.rotation.yAngle = degreeToRadian(30);
+            state.rotation.zAngle = degreeToRadian(0);
+            
+            state.cameraRadius = 0.8;
+        }
+        state.animation.xAngle = null
+        state.animation.yAngle = null
+        state.animation.zAngle = null
+
+        angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
+        angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
+        angleZSlider.updateValue(radianToDegree(state.rotation.zAngle));
+
+        cameraRadius.updateValue(state.cameraRadius);
     }
 
     function computeModelMatrix() {
@@ -223,45 +256,7 @@ function main() {
 
     projectionType.addEventListener("change", function (event) {
         state.projectionType = event.target.value;
-        if (state.projectionType == "oblique") {
-            state.rotation.xAngle = degreeToRadian(180);
-            state.rotation.yAngle = degreeToRadian(0);
-            state.rotation.zAngle = degreeToRadian(0);
-            
-            angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
-            angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
-            angleYSlider.updateValue(radianToDegree(state.rotation.zAngle));
-
-            state.cameraRadius = 0;
-            cameraRadius.updateValue(state.cameraRadius);
-        } else if (state.projectionType == "orthographic") {
-            state.rotation.xAngle = degreeToRadian(30);
-            state.rotation.yAngle = degreeToRadian(30);
-            angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
-            angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
-
-            state.cameraRadius = 0.5;
-            cameraRadius.updateValue(state.cameraRadius);
-        } else if (state.projectionType == "perspective") {
-            state.rotation.xAngle = degreeToRadian(30);
-            state.rotation.yAngle = degreeToRadian(30);
-            angleXSlider.updateValue(radianToDegree(state.rotation.xAngle));
-            angleYSlider.updateValue(radianToDegree(state.rotation.yAngle));
-
-            state.cameraRadius = 0.8;
-            cameraRadius.updateValue(state.cameraRadius);
-        }
-
-        if (state.projectionType == "perspective") {
-            fovSlider.style.display = "block";
-            zNearSlider.style.display = "block";
-            zFarSlider.style.display = "block";
-        }
-        else {
-            fovSlider.style.display = "none";
-            zNearSlider.style.display = "none";
-            zFarSlider.style.display = "none";
-        }
+        setupInitialObjectTransformation()
     })
 
     let animationCheckbox = document.getElementById("animation");
@@ -273,8 +268,15 @@ function main() {
         }
     });
 
+    let resetView = document.getElementById("reset-view");
+    resetView.addEventListener("click", function (event) {
+        projectionType = JSON.parse(JSON.stringify(state.projectionType))
+        state = JSON.parse(JSON.stringify(initialState))
+        state.projectionType = projectionType
+        setupInitialObjectTransformation()
+        animationCheckbox.checked = false;
 
-
+    })
 
     let size = 4; // 4 components per iteration
     let type = gl.FLOAT; // the data is 32bit floats
