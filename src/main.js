@@ -344,7 +344,6 @@ function main() {
 
     let worldViewProjectionLocation = gl.getUniformLocation(program, "uWorldViewProjection");
     let worldLocation = gl.getUniformLocation(program, "uWorld");
-    let colorLocation = gl.getUniformLocation(program, "uColor");
     var reverseLightDirectionLocation = gl.getUniformLocation(program, "uReverseLightDirection");
     
     var shapeType = document.getElementById("shape-type");
@@ -383,13 +382,13 @@ function main() {
         );
         gl.enableVertexAttribArray(vertexPosition);
 
-        // let colorBuffer = gl.createBuffer();
-        // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+        let colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
-        // let vertexColor = gl.getAttribLocation(program, "vColor");
-        // gl.vertexAttribPointer(vertexColor, size, type, normalize, stride, offset);
-        // gl.enableVertexAttribArray(vertexColor);
+        let vertexColor = gl.getAttribLocation(program, "vColor");
+        gl.vertexAttribPointer(vertexColor, size, type, normalize, stride, offset);
+        gl.enableVertexAttribArray(vertexColor);
     
         var normalBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
@@ -464,7 +463,6 @@ function main() {
 
         gl.uniformMatrix4fv(worldViewProjectionLocation, false, matrix);
         gl.uniformMatrix4fv(worldLocation, false, matrix);
-        gl.uniform4fv(colorLocation, new Float32Array([0.2, 1, 0.2, 1]));
         gl.uniform3fv(reverseLightDirectionLocation, mat4.normalize([0.5, 0.7, 1]));
 
         gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
