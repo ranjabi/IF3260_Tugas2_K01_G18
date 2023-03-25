@@ -333,6 +333,16 @@ function main() {
         }
     });
 
+    let shadingCheckbox = document.getElementById("shading");
+    shadingCheckbox.addEventListener("change", function() {
+        let isShadingOnLocation = gl.getUniformLocation(program, "isShadingOn");
+        if (shadingCheckbox.checked) {
+            gl.uniform1f(isShadingOnLocation, [1]);
+        } else {
+            gl.uniform1f(isShadingOnLocation, [0]);
+        }
+    })
+
     let resetView = document.getElementById("reset-view");
     resetView.addEventListener("click", function (event) {
         projectionType = JSON.parse(JSON.stringify(state.projectionType))
@@ -341,6 +351,9 @@ function main() {
         setupInitialObjectTransformation()
         resetSliderUIValue()
         animationCheckbox.checked = false;
+        shadingCheckbox.checked = false;
+        let isShadingOnLocation = gl.getUniformLocation(program, "isShadingOn");
+        gl.uniform1f(isShadingOnLocation, [0]);
     })
 
     let size = 4; // 4 components per iteration
@@ -534,6 +547,8 @@ function main() {
             cameraAngle: [],
             cameraRadius: [],
             shapeType: [],
+            animation: [],
+            shading: []
         };
 
         saveObject.positions.push(vertices);
@@ -556,6 +571,8 @@ function main() {
         saveObject.cameraAngle.push(state.cameraAngle);
         saveObject.cameraRadius.push(state.cameraRadius);
         saveObject.shapeType.push(state.shapeType);
+        saveObject.animation.push(animationCheckbox.checked);
+        saveObject.shading.push(shadingCheckbox.checked);
 
         let jsonFile = JSON.stringify(saveObject);
         let data = new Blob([jsonFile], { type: "application/json" });
@@ -661,6 +678,23 @@ function main() {
             else if (key === "shapeType") {
                 var shapeType = document.getElementById("shape-type");
                 shapeType.value = item;
+            }
+            else if (key === "animation") {
+                animationCheckbox.checked = item;
+                if (animationCheckbox.checked) {
+                    state.runAnimation = true;
+                } else {
+                    state.runAnimation = false;
+                }
+            }
+            else if (key === "shading") {
+                shadingCheckbox.checked = item;
+                let isShadingOnLocation = gl.getUniformLocation(program, "isShadingOn");
+                if (shadingCheckbox.checked) {
+                    gl.uniform1f(isShadingOnLocation, [1]);
+                } else {
+                    gl.uniform1f(isShadingOnLocation, [0]);
+                }
             }
           }
         }
