@@ -96,6 +96,18 @@ function main() {
             
             state.cameraRadius = 0.8;
         }
+
+        if (state.projectionType == "perspective") {
+            fovSlider.style.display = "block";
+            zNearSlider.style.display = "block";
+            zFarSlider.style.display = "block";
+        }
+        else {
+            fovSlider.style.display = "none";
+            zNearSlider.style.display = "none";
+            zFarSlider.style.display = "none";
+        }
+        
         state.animation.xAngle = null
         state.animation.yAngle = null
         state.animation.zAngle = null
