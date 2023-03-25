@@ -120,11 +120,15 @@ function main() {
             fovSlider.style.display = "block";
             zNearSlider.style.display = "block";
             zFarSlider.style.display = "block";
+
+            fovSlider.parentElement.style.border = "1px solid black"
         }
         else {
             fovSlider.style.display = "none";
             zNearSlider.style.display = "none";
             zFarSlider.style.display = "none";
+
+            fovSlider.parentElement.style.border = "none"
         }
         
         state.animation.xAngle = null
