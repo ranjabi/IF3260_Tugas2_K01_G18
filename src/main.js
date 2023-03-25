@@ -70,7 +70,7 @@ function main() {
         cameraAngle: 0,
         cameraRadius: 0.8,
         projectionType: "perspective",
-        shapeType: "random"
+        shapeType: "cube"
 
     };
 
@@ -315,8 +315,8 @@ function main() {
     var reverseLightDirectionLocation = gl.getUniformLocation(program, "uReverseLightDirection");
     
     var shapeType = document.getElementById("shape-type");
-    // shapeType.addEventListener("change", function (event) {
-        // state.shapeType = event.target.value;
+    shapeType.addEventListener("change", function (event) {
+        state.shapeType = event.target.value;
         hollow_object = new BaseObject();
         if (state.shapeType == "cube") {
             hollow_object.initCube();
@@ -329,7 +329,7 @@ function main() {
         normals = hollow_object.getFlattenNormals();
 
         initBuffers();
-    // })
+    })
 
     
     render();
