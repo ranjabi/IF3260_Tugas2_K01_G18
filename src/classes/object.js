@@ -314,12 +314,11 @@ export default class BaseObject {
         ]
 
         let baseColors = [
-            [0.0, 0.0, 0.0, 1.0], // black
-            [1.0, 0.0, 0.0, 1.0], // red
-            [1.0, 1.0, 0.0, 1.0], // yellow
-            [0.0, 1.0, 0.0, 1.0], // green
-            [0.0, 0.0, 1.0, 1.0], // blue
-            [1.0, 0.0, 1.0, 1.0], // magenta
+            [0.08235, 0.59608, 0.58431, 1.0], 
+            [0.00000, 0.16863, 0.35686, 1.0], 
+            [0.10196, 0.37255, 0.47843, 1.0], 
+
+
         ]
 
         let indices = [
@@ -385,12 +384,17 @@ export default class BaseObject {
                 let point2 = new Point(x2, y2, z2);
                 let point3 = new Point(x3, y3, z3);
     
-                let color1 = new Color(...baseColors[4]);
-                let color2 = new Color(...baseColors[4]);
-                let color3 = new Color(...baseColors[4]);
+                let color;
+                if (i/6 < 16) {
+                    color = new Color(...baseColors[0]);
+                } else if (i/6 < 32) {
+                    color = new Color(...baseColors[1]);
+                } else {
+                    color = new Color(...baseColors[2]);
+                }
                 
                 this.vertices.push(point1, point2, point3);
-                this.colors.push(color1, color2, color3);
+                this.colors.push(color, color, color);
         }
 
         for (let i = 0; i < indices.length; i += 3) {
@@ -410,4 +414,5 @@ export default class BaseObject {
 
 
     }
+
 }
